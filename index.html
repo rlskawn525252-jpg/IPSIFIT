@@ -228,7 +228,7 @@ body::before{content:'';position:fixed;inset:0;background:
   </div>
 
   <!-- Step 2: 대학 목록 (아코디언) -->
-  <div class="card collapsible open" id="card2">
+  <div class="card collapsible" id="card2">
     <div class="card-t card-header-row" style="justify-content:space-between" onclick="toggleCard('card2', event)">
       <div style="display:flex;align-items:center;gap:.45rem"><span class="card-toggle-arrow">▶</span><span class="sn">2</span> <span id="s2t">대학·전형 목록</span></div>
       <div style="display:flex;gap:.3rem" onclick="event.stopPropagation()">
@@ -1257,7 +1257,7 @@ function renderUnivs(){
     }).join('');
 
     return `
-    <div class="school-group open" id="school_${safeId}">
+    <div class="school-group" id="school_${safeId}">
       <div class="school-header" onclick="toggleSchool('${safeId}')">
         <span class="school-arrow">▶</span>
         <span class="school-name">${uniName}</span>
