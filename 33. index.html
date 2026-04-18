@@ -1,0 +1,2657 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 성적 입시핏</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0b0d12;--bg2:#11141b;--bg3:#181c26;--bg4:#212736;
+  --bd:#262d3e;--bd2:#3a4460;
+  --t:#e8eaf2;--t2:#949bb4;--t3:#5e6580;
+  --ac:#5b9aff;--ac2:#4080e8;--ac-dim:rgba(91,154,255,0.12);--ac-glow:rgba(91,154,255,0.2);
+  --gn:#3dd9a0;--gn-bg:rgba(61,217,160,0.08);
+  --or:#f5a623;--or-bg:rgba(245,166,35,0.08);
+  --rd:#f05555;--rd-bg:rgba(240,85,85,0.08);
+  --pp:#a78bfa;--pp-bg:rgba(167,139,250,0.1);
+  --r:14px;--rs:10px;
+  --font-display:'Outfit',sans-serif;
+  --font-body:'Noto Sans KR',sans-serif;
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--t);min-height:100vh;line-height:1.65}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 70% 50% at 15% 5%,rgba(91,154,255,0.04),transparent),
+  radial-gradient(ellipse 50% 40% at 85% 95%,rgba(167,139,250,0.03),transparent);
+  pointer-events:none;z-index:0}
+
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:2rem 1.2rem 5rem}
+
+/* ── Header ── */
+.hdr{text-align:center;margin-bottom:2.2rem;padding-top:.5rem;position:relative}
+.hdr-logo{position:absolute;top:0;right:0;width:60px;height:60px;object-fit:contain;opacity:.85;transition:opacity .2s}
+.hdr-logo:hover{opacity:1}
+@media (max-width:480px){
+  .hdr-logo{width:48px;height:48px}
+}
+.badge{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.18em;color:var(--ac);background:var(--ac-dim);border:1px solid var(--ac-glow);padding:.25rem 1rem;border-radius:99px;margin-bottom:.65rem;font-family:var(--font-display)}
+.hdr h1{font-family:var(--font-display);font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,#fff 20%,var(--ac) 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.25rem;letter-spacing:-.02em}
+.hdr p{color:var(--t2);font-size:.82rem}
+
+/* ── Sticky Summary Dashboard ── */
+.summary-dash{position:sticky;top:.6rem;z-index:50;background:rgba(17,20,27,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:1.2rem;padding:.6rem .9rem;transition:padding .2s;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.summary-dash-header{display:flex;align-items:center;justify-content:space-between;gap:.5rem;cursor:pointer;user-select:none}
+.summary-dash-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--t2);font-family:var(--font-display);text-transform:uppercase;display:flex;align-items:center;gap:.35rem}
+.summary-dash-title .arr{display:inline-block;transition:transform .2s;font-size:.6rem}
+.summary-dash.open .summary-dash-title .arr{transform:rotate(90deg)}
+.summary-dash-total{font-size:.72rem;color:var(--t2)}
+.summary-dash-total b{color:var(--ac);font-weight:700}
+.summary-dash-body{display:none;margin-top:.55rem;padding-top:.55rem;border-top:1px solid var(--bd)}
+.summary-dash.open .summary-dash-body{display:block}
+.summary-row{display:grid;grid-template-columns:56px 1fr 80px;gap:.5rem;align-items:center;padding:.28rem 0;font-size:.75rem}
+.summary-row+.summary-row{border-top:1px dashed var(--bd)}
+.summary-cat{font-weight:600;color:var(--t)}
+.summary-grades{color:var(--t2);font-size:.72rem;line-height:1.5;word-break:break-all}
+.summary-grades .g{display:inline-block;padding:.05rem .3rem;border-radius:4px;margin:.08rem .12rem .08rem 0;background:var(--bg3);font-family:var(--font-display);font-weight:600;font-size:.7rem}
+.summary-grades .g-abc{background:var(--pp-bg);color:var(--pp)}
+.summary-avg{text-align:right;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.summary-avg .sub{font-size:.6rem;color:var(--t3);font-weight:400;display:block;line-height:1}
+.summary-empty{color:var(--t3);font-size:.72rem;text-align:center;padding:.5rem 0}
+
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem;margin-bottom:1.2rem;transition:border .2s}
+.card-t{font-size:1rem;font-weight:700;margin-bottom:.15rem;display:flex;align-items:center;gap:.45rem}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--ac);color:#fff;font-size:.7rem;font-weight:800;font-family:var(--font-display);flex-shrink:0}
+.card-d{color:var(--t2);font-size:.74rem;margin-bottom:.9rem}
+
+/* ── Collapsible Card ── */
+.card.collapsible .card-header-row{cursor:pointer;user-select:none}
+.card.collapsible .card-toggle-arrow{display:inline-block;color:var(--t3);font-size:.7rem;transition:transform .25s;margin-right:.15rem}
+.card.collapsible.open .card-toggle-arrow{transform:rotate(90deg)}
+.card.collapsible .card-body{display:none}
+.card.collapsible.open .card-body{display:block}
+.card.collapsible:not(.open){padding-bottom:1.5rem}
+.card.collapsible:not(.open) .card-d{display:none}
+
+/* ── 등급 입력: 학기별 아코디언 + 과목 테이블 ── */
+.sem-group{margin-bottom:.5rem;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;background:var(--bg3)}
+.sem-header{display:flex;align-items:center;gap:.5rem;padding:.6rem .8rem;cursor:pointer;user-select:none;transition:background .15s}
+.sem-header:hover{background:var(--bg4)}
+.sem-arrow{color:var(--t3);font-size:.7rem;transition:transform .25s;flex-shrink:0;width:.9rem;text-align:center}
+.sem-group.open .sem-arrow{transform:rotate(90deg)}
+.sem-title{font-weight:700;font-size:.82rem;flex:1}
+.sem-cnt{font-size:.62rem;color:var(--t3);background:var(--bg4);padding:.12rem .45rem;border-radius:99px}
+.sem-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.sem-group.open .sem-body{max-height:3000px}
+.sem-body-inner{padding:.4rem .5rem .5rem}
+
+.grade-table{width:100%;border-collapse:collapse;font-size:.78rem;margin-bottom:.4rem}
+.grade-table th{background:var(--bg4);color:var(--t2);font-weight:600;padding:.4rem .3rem;border:1px solid var(--bd);text-align:center;font-size:.68rem;white-space:nowrap}
+.grade-table td{padding:.25rem .2rem;border:1px solid var(--bd);text-align:center}
+.grade-table td.subj-label{background:var(--bg3);color:var(--t);font-weight:600;text-align:left;padding-left:.5rem;white-space:nowrap;width:55px;font-size:.72rem}
+.grade-table input{width:100%;min-width:28px;background:var(--bg3);border:1px solid transparent;border-radius:5px;padding:.3rem .15rem;color:var(--t);font-family:var(--font-body);font-size:.78rem;text-align:center;outline:none;transition:border .2s}
+.grade-table input:focus{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-dim)}
+.grade-table input::placeholder{color:var(--t3);font-size:.65rem}
+.grade-table .name-input{text-align:left;min-width:60px}
+.add-row-btn{display:inline-flex;align-items:center;gap:.25rem;font-size:.7rem;font-weight:500;color:var(--ac);background:none;border:1px dashed var(--bd2);border-radius:6px;padding:.3rem .7rem;cursor:pointer;margin-top:.2rem;font-family:var(--font-body);transition:border .2s}
+.add-row-btn:hover{border-color:var(--ac)}
+
+.grade-note{font-size:.66rem;color:var(--t3);line-height:1.7;margin-top:.3rem}
+.grade-note b{color:var(--t2)}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.55rem 1.3rem;border:none;border-radius:var(--rs);font-family:var(--font-body);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-p{background:var(--ac);color:#fff;box-shadow:0 3px 14px rgba(91,154,255,0.25)}
+.btn-p:hover{background:var(--ac2);transform:translateY(-1px);box-shadow:0 5px 20px rgba(91,154,255,0.3)}
+.btn-s{background:var(--bg4);color:var(--t);border:1px solid var(--bd)}
+.btn-s:hover{border-color:var(--bd2)}
+.btn-del-selected{background:none;border:1px solid var(--bd);border-radius:var(--rs);color:var(--t3);font-size:.72rem;font-weight:500;padding:.35rem .8rem;cursor:pointer;font-family:var(--font-body);transition:all .2s;white-space:nowrap}
+.btn-del-selected:hover{color:var(--rd);border-color:var(--rd);background:var(--rd-bg)}
+.btn-g{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.8rem}
+
+/* ── 학교 그룹 아코디언 ── */
+.school-group{margin-bottom:1rem;border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;background:var(--bg2)}
+.school-header{display:flex;align-items:center;gap:.6rem;padding:.75rem 1rem;cursor:pointer;user-select:none;background:var(--bg3);border-bottom:1px solid var(--bd);transition:background .2s}
+.school-header:hover{background:var(--bg4)}
+.school-arrow{color:var(--t3);font-size:.75rem;transition:transform .25s;flex-shrink:0;width:1rem;text-align:center}
+.school-group.open .school-arrow{transform:rotate(90deg)}
+.school-name{font-weight:800;font-size:.95rem;flex:1}
+.school-count{font-size:.65rem;color:var(--t3);font-weight:400;background:var(--bg4);padding:.15rem .5rem;border-radius:99px}
+.school-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.school-group.open .school-body{max-height:5000px}
+.school-body-inner{padding:.6rem .6rem .4rem}
+
+/* ── 전형 아코디언 (학교 내부) ── */
+.univ-section{margin-bottom:.5rem;border:1px solid var(--bd);border-radius:var(--rs);overflow:hidden;background:var(--bg3);transition:border .2s}
+.univ-section:hover{border-color:var(--bd2)}
+.univ-header{display:flex;align-items:center;gap:.7rem;padding:.85rem 1rem;cursor:pointer;user-select:none;transition:background .2s}
+.univ-header:hover{background:var(--bg4)}
+.univ-arrow{color:var(--t3);font-size:.7rem;transition:transform .25s;flex-shrink:0;width:1rem;text-align:center}
+.univ-section.open .univ-arrow{transform:rotate(90deg)}
+.univ-info{flex:1;min-width:0}
+.univ-name{font-weight:700;font-size:.9rem}
+.univ-dept{color:var(--pp);font-size:.75rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.univ-grade-badge{flex-shrink:0;font-family:var(--font-display);font-size:.85rem;font-weight:700;color:var(--ac);min-width:2.8rem;text-align:center}
+.univ-grade-badge .grade-num{font-size:.95rem}
+.univ-grade-badge .grade-label{font-size:.55rem;color:var(--t3);font-weight:500;display:block;line-height:1.2}
+.univ-chk{flex-shrink:0;width:18px;height:18px;border-radius:4px;border:1.5px solid var(--bd2);background:var(--bg4);cursor:pointer;appearance:none;-webkit-appearance:none;outline:none;transition:all .15s;margin:0}
+.univ-chk:checked{background:var(--ac);border-color:var(--ac)}
+.univ-chk:checked::after{content:'✓';display:block;text-align:center;color:#fff;font-size:.7rem;line-height:16px;font-weight:700}
+
+.univ-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.univ-section.open .univ-body{max-height:600px}
+.univ-content{padding:.8rem 1rem 1rem}
+.univ-detail{font-size:.74rem;color:var(--t2);line-height:1.8}
+.univ-detail b{color:var(--t);font-weight:500}
+
+/* ── Score Detail in Accordion ── */
+.score-detail{margin-top:.7rem;padding:.7rem .8rem;background:var(--bg2);border-radius:8px;font-size:.73rem;color:var(--t2);line-height:1.9}
+.score-detail .row{display:flex;justify-content:space-between;align-items:center;padding:.15rem 0}
+.score-detail .row b{color:var(--t)}
+.score-detail .total-row{border-top:1px solid var(--bd);margin-top:.3rem;padding-top:.4rem;font-weight:700;color:var(--ac)}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120%);background:var(--bg4);border:1px solid var(--bd2);color:var(--t);padding:.55rem 1.2rem;border-radius:var(--rs);font-size:.78rem;font-weight:500;z-index:999;transition:transform .3s ease;box-shadow:0 8px 30px rgba(0,0,0,0.5);max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.info-box{padding:.7rem 1rem;background:var(--ac-dim);border:1px solid var(--ac-glow);border-radius:var(--rs);font-size:.74rem;color:var(--ac);line-height:1.75;margin-bottom:1rem}
+
+/* ── Result Grade Circles ── */
+.grade-circle{width:2.6rem;height:2.6rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:1.1rem;flex-shrink:0}
+.g1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}
+.g2{background:linear-gradient(135deg,#a3e635,#65a30d);color:#000}
+.g3{background:linear-gradient(135deg,#34d399,#059669);color:#fff}
+.g4{background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff}
+.g5{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
+.g6{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff}
+.g7{background:linear-gradient(135deg,#f472b6,#db2777);color:#fff}
+.g8{background:linear-gradient(135deg,#fb923c,#ea580c);color:#fff}
+.g9{background:linear-gradient(135deg,#f87171,#dc2626);color:#fff}
+.gna{background:var(--bg4);color:var(--t3)}
+
+.empty{text-align:center;padding:1.5rem;color:var(--t3);font-size:.8rem}
+
+@media(max-width:600px){
+  .app{padding:1rem .7rem 3rem}
+  .hdr h1{font-size:1.7rem}
+  .card{padding:1.1rem}
+  .grade-table{font-size:.72rem}
+  .grade-table input{font-size:.74rem;padding:.3rem .15rem}
+  .univ-header{padding:.7rem .8rem;gap:.5rem}
+  .univ-grade-badge .grade-num{font-size:1.1rem}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <img class="hdr-logo" src="data:image/png;base64,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" alt="NM 로고">
+    <div class="badge">학생부 교과 전형 · 오프라인 사용 가능</div>
+    <h1>내 성적 입시핏</h1>
+    <p>내 등급을 넣으면 학교별 환산 등급이 바로 나옵니다</p>
+  </div>
+
+  <div class="info-box">
+    💡 HTML 파일을 다운받아 브라우저에서 열면 인터넷 없이도 사용 가능!<br>
+    📌 다른 대학 추가가 필요하면 입시요강 PDF를 보내주세요.
+  </div>
+
+  <!-- 상단 고정 요약 대시보드 (스크롤 시 상단에 붙음) -->
+  <div class="summary-dash" id="summaryDash">
+    <div class="summary-dash-header" onclick="toggleSummaryDash()">
+      <div class="summary-dash-title">
+        <span class="arr">▶</span>
+        <span>교과별 등급 요약</span>
+      </div>
+      <div class="summary-dash-total" id="summaryDashTotal">—</div>
+    </div>
+    <div class="summary-dash-body" id="summaryDashBody"></div>
+  </div>
+
+  <!-- Step 1: 등급 입력 (과목 단위) -->
+  <div class="card collapsible" id="card1">
+    <div class="card-t card-header-row" style="justify-content:space-between" onclick="toggleCard('card1', event)">
+      <div style="display:flex;align-items:center;gap:.45rem"><span class="card-toggle-arrow">▶</span><span class="sn">1</span> 내 등급 입력</div>
+      <div style="display:flex;gap:.3rem" onclick="event.stopPropagation()">
+        <button id="btnDelGrades" class="btn-del-selected" onclick="deleteSelectedGrades()">선택 삭제</button>
+      </div>
+    </div>
+    <div class="card-d">학기를 펼쳐 과목별 등급을 확인/수정하세요. 체크 후 '선택 삭제'로 제거, '+ 과목 추가'로 추가 가능. <b style="color:var(--ac)">입력은 자동 저장됩니다.</b></div>
+    <div class="card-body">
+      <div id="gradeAccordion"></div>
+      <div class="grade-note">
+        ※ 1~9등급 숫자 입력. 진로선택/성취도 과목은 <b>A, B, C</b> 문자 입력 가능 (A→1, B→5, C→8 자동변환)<br>
+        ※ 교과 분류는 대학별 산출에 사용됩니다. 빈 행은 무시됩니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: 대학 목록 (아코디언) -->
+  <div class="card collapsible open" id="card2">
+    <div class="card-t card-header-row" style="justify-content:space-between" onclick="toggleCard('card2', event)">
+      <div style="display:flex;align-items:center;gap:.45rem"><span class="card-toggle-arrow">▶</span><span class="sn">2</span> <span id="s2t">대학·전형 목록</span></div>
+      <div style="display:flex;gap:.3rem" onclick="event.stopPropagation()">
+        <button id="btnResetUnivs" class="btn-del-selected" onclick="resetUnivs()" style="opacity:.75" title="삭제한 전형 복원">초기화</button>
+        <button id="btnDelUnivs" class="btn-del-selected" onclick="deleteSelected()">선택 삭제</button>
+      </div>
+    </div>
+    <div class="card-d">필요 없는 전형은 체크 후 '선택 삭제'로 제거하세요. <b style="color:var(--ac)">삭제 상태는 자동 저장됩니다.</b></div>
+    <div class="card-body">
+      <div class="btn-g" style="margin-bottom:1rem">
+        <button class="btn btn-p" onclick="calculateAll()">📊 등급 산출하기</button>
+      </div>
+      <div id="univList"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════
+// DATA — 핵심 산출 데이터만 보관
+// ════════════════════════════════════
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ⚠️  새 대학 추가 시 반드시 읽을 것: 성취도(A/B/C) 과목 처리 규칙
+   ═══════════════════════════════════════════════════════════════════════
+   
+   한국 고교 성적에는 두 가지 체계가 섞여 있다:
+   ① 석차등급 (1~9등급, 상대평가)  — 예: 국·영·수 대부분
+   ② 성취도 (A/B/C, 절대평가)      — 예: 진로선택, 과학탐구실험, 체육·예술
+   
+   본 산출기는 성적 입력을 통일하기 위해 A/B/C를 JINRO_MAP으로 숫자 등급에
+   매핑하지만(A→1, B→5, C→8), 이는 '저장용 편의값'일 뿐 실제 산출 시에는
+   대학별로 다르게 다뤄야 한다.
+   
+   【기본 원칙 — 대부분의 대학】
+   과목 카테고리가 '진로선택'인 A/B/C는 진로선택 풀로 보내거나 대학별 환산표를
+   적용하고, 과목 카테고리가 국/영/수/사회/과학/한국사 등 '일반 석차등급 교과'
+   인데 A/B/C로 입력된 과목(예: 과학탐구실험, 융합과학, 체육교과 등)은
+   '석차등급이 없는 과목'이므로 석차등급 기반 산출에서 **완전히 제외**한다.
+   
+   구현 시 각 grade 항목에 .isABC 플래그가 있으니 이를 활용:
+     - collectGrades()로 얻은 pool: `filter(x => !x.isABC)` 로 걸러내기
+     - MY_GRADES 직접 순회 시: `const raw = r.grade.trim().toUpperCase();`
+       `if(['A','B','C'].includes(raw) && r.cat !== '진로선택') continue;`
+   
+   【예외 — 대학 요강이 명시하는 경우만】
+   일부 대학은 진로선택 외의 A/B/C도 환산해서 반영한다고 명시한다. 이 경우
+   해당 대학 섹션에 반드시 주석으로 출처를 남기고 분기 처리할 것.
+   예) 특성화고교졸업자전형 + 전문교과 A/B/C/D/E 환산 등
+   
+   【이미 적용된 대학 (참조용)】
+     한서대 / 대전대 / 백석대 / 동양미래대 / 부천대 / 중부대
+       → 모두 일반교과의 A/B/C는 제외, 진로선택 A/B/C만 대학별 규칙으로 반영
+     국립경국대
+       → 진로선택 풀로 통합 (의도된 동작, A/B/C를 별도 등급으로 환산)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const GRADE_SCORE = {1:10,2:9,3:8,4:7,5:6,6:5,7:4,8:3,9:2};
+const JINRO_MAP = {"A":1,"a":1,"B":5,"b":5,"C":8,"c":8};
+const JINRO_SCORE_MAP = {1:9.5, 5:6.5, 8:3.0};
+
+const SUBJECTS = ['국어','수학','영어','사회','과학','진로선택','한국사']; // 한서대 반영교과 참조용
+const SEMESTERS = ['1-1','1-2','2-1','2-2','3-1','3-2'];
+
+// 대학 전형 데이터 (산출에 필요한 최소 정보만)
+const UNIVS = [
+  {
+    id:"general",
+    university:"한서대학교",
+    department:"전 학과 (항공관광·항공운항 제외, 면접·실기 없는 전형)",
+    reflect_subjects:["국어","영어","수학","사회","진로선택"],
+    reflect_count:2,
+    scoring:"basic",
+    note:"학생부교과, 지역인재, 사회기여자, 농어촌, 특성화고, 기회균형, 만학도 전형. 📌 반영교과: 국어·외국어(제2외국어 포함)·수학·사회/과학·진로선택 각 2과목 = 10과목. 교과점수 X × 45 + 출결 50 = 500점. 1등급=10점~9등급=2점, A=9.5·B=6.5·C=3점. 반영과목 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"tourism",
+    university:"한서대학교",
+    department:"항공관광학과 · 한서인재전형 (전학과)",
+    reflect_subjects:["국어","영어","수학","사회","진로선택"],
+    reflect_count:2,
+    scoring:"interview",
+    note:"학생부 60%(교과540+비교과60=600점) + 면접 40%(400점) = 1000점. 📌 반영교과: 국어·외국어(제2외국어 포함)·수학·사회/과학·진로선택 각 2과목 = 10과목. X를 구간표에 대입하여 교과점수 산출. A=9.5·B=6.5·C=3점. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"pilot",
+    university:"한서대학교",
+    department:"항공운항학과 (이수단위 적용)",
+    reflect_subjects:["국어","영어","수학","사회","진로선택"],
+    reflect_count:2,
+    scoring:"unit",
+    note:"항공운항학과: 이수단위 적용. 단위가중(5이상=1.0, 4=0.98, 3=0.97, 2이하=0.96) × 등급점수. X를 구간표에 대입(교과540+출결60=600점). 📌 반영교과: 국어·외국어·수학·사회/과학·진로선택 각 2과목 = 10과목. 수능 반영 별도",
+    active:true
+  },
+  {
+    id:"nurse",
+    university:"한서대학교",
+    department:"간호학과 (지역인재 기회균형)",
+    reflect_subjects:["국어","영어","수학","사회","진로선택"],
+    reflect_count:2,
+    scoring:"basic",
+    note:"충남/충북/세종/대전 소재 고교 출신. 학생부 100% = 500점(교과450+출결50). 📌 반영교과: 국어·외국어(제2외국어 포함)·수학·사회/과학·진로선택 각 2과목 = 10과목. A=9.5·B=6.5·C=3점. 부족 시 9등급 보충",
+    active:true
+  },
+  // ── 연성대학교 2026 ──
+  {
+    id:"ys_general",
+    university:"연성대학교",
+    department:"면접 미실시 학과 (일반고/특성화고/일반전형 수시)",
+    reflect_subjects:[], // 연성대는 전과목 학기평균 방식
+    reflect_count:0,
+    scoring:"yeonsung_1000",
+    note:"학생부 100% = 1,000점. 우수 2개 학기 전과목 평균등급 반영 (출결가산점 별도 최대100점). 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"ys_interview",
+    university:"연성대학교",
+    department:"면접 학과 (항공서비스·경찰경호보안·국방군사 등)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"yeonsung_400",
+    note:"학생부 40%(400점) + 면접 60%(600점) = 1,000점. 우수 2개 학기 평균등급. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"ys_nurse",
+    university:"연성대학교",
+    department:"간호학과 (신설, 4년제)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"yeonsung_1000",
+    note:"수시 일반고: 학생부 100% = 1,000점. 정시: 수능60%+학생부40%. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  // ── 백석대학교 2026 ──
+  {
+    id:"bs_100",
+    university:"백석대학교",
+    department:"학생부교과 100% (일반/사회기여자/지역인재 등)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"baekseok_100",
+    note:"6개 교과(국·수·영·사(역사·도덕)·한국사·과) 상위 15과목 이수단위가중(810점) + 전 교과 진로 상위 3과목(90점) + 출결(100점) = 1,000점. 수능 최저 없음. 📌 진로: A=2·B=4·C=6등급 환산(요강 공식 중간값). 교과 15개·진로 3개 미만 시 9등급 보충. 영어 교과는 cat=영어만 반영(제2외국어 미포함)",
+    active:true
+  },
+  {
+    id:"bs_60",
+    university:"백석대학교",
+    department:"학생부 60%+면접 40% (백석인재/항공서비스 등)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"baekseok_60",
+    note:"학생부 60%(교과486+진로54+출결60=600점) + 면접 40%(400점) = 1,000점. 📌 6개 교과 15과목 + 전 교과 진로 3과목. 진로 A=2·B=4·C=6등급 환산(요강 공식 중간값). 3개 미만 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"bs_20",
+    university:"백석대학교",
+    department:"학생부 20%+실기 80% (디자인영상/문화예술/실용음악)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"baekseok_20",
+    note:"학생부 20%(교과162+진로18+출결20=200점) + 실기 80%(800점) = 1,000점. 📌 6개 교과 15과목 + 전 교과 진로 3과목. 진로 A=2·B=4·C=6등급 환산(요강 공식 중간값). 3개 미만 시 9등급 보충",
+    active:true
+  },
+  // ── 부천대학교 2026 ──
+  {
+    id:"bc_no_interview",
+    university:"부천대학교",
+    department:"면접 미실시 학과 (건축과·토목공학과·경영학과·세무회계학과·사회복지학과·유아교육과 등)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"bucheon_100",
+    note:"교과등급 400점(100%) = 400점 만점. 최우수 2개 학기 전과목 이수단위가중 평균등급. 출결 가산점 최대 20점. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"bc_interview20",
+    university:"부천대학교",
+    department:"면접 20% 학과 (뷰티케어과·호텔외식조리학과·재활스포츠과 등)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"bucheon_80",
+    note:"교과등급 400점(80%) + 면접 100점(20%) = 500점 만점. 최우수 2개 학기 평균등급. 출결 가산점 최대 20점. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"bc_interview60",
+    university:"부천대학교",
+    department:"면접 60% 학과 (항공서비스과·간호학과 등)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"bucheon_40",
+    note:"교과등급 400점(40%) + 면접 600점(60%) = 1,000점 만점. 최우수 2개 학기 평균등급. 출결 가산점 최대 20점. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"bc_nurse",
+    university:"부천대학교",
+    department:"간호학과 (4년제, 소사캠퍼스)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"bucheon_40",
+    note:"교과등급 400점(40%) + 면접 600점(60%) = 1,000점 만점. 수시1차 경쟁률 20.3:1 (전년도). 최저 3.0등급. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"bc_air",
+    university:"부천대학교",
+    department:"항공서비스과 (본캠퍼스)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"bucheon_40",
+    note:"교과등급 400점(40%) + 면접 600점(60%) = 1,000점 만점. 수시1차 경쟁률 28.9:1 (전년도). 최저 5.1등급. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  // ── 수원과학대학교 2026 ──
+  {
+    id:"ssc_100",
+    university:"수원과학대학교",
+    department:"일반고 출신자 / 특성화고 출신자 / 대학자체기준 / 농어촌 / 기초생활수급자 및 차상위계층",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"suwon_1000",
+    note:"내신 100%(1,000점). 전과목 이수단위가중 평균등급, 1~2학년 최우수 1학기 반영. 등급표: 1등급=1,000 ~ 9등급=780. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"ssc_air",
+    university:"수원과학대학교",
+    department:"항공관광과 (내신40%+면접60%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"suwon_400",
+    note:"내신 40%(400점/312점) + 면접고사 60%(600점/0점) = 1,000점. 전과목 최우수 1학기 평균등급 반영. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"ssc_act",
+    university:"수원과학대학교",
+    department:"연기영상과 (내신20%+실기80%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"suwon_200",
+    note:"내신 20%(200점/156점) + 실기고사 80%(800점/0점) = 1,000점. 전과목 최우수 1학기 평균등급 반영. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  // ── 동양미래대학교 2026 ──
+  {
+    id:"dmu_100",
+    university:"동양미래대학교",
+    department:"전 학과 (수시 일반고/특성화고/농어촌/기초생활/재직자/서해5도)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"dongyang_1000",
+    note:"학생부 100% = 1,000점. 교과 90%(900점) + 출결 10%(100점). 전과목 우수 2개 학기 평균등급 반영 (3-1까지). 석차등급 없는 과목 3개 이상인 학기만 반영. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  // ── 국립경국대학교 2026 ──
+  {
+    id:"gknu_general",
+    university:"국립경국대학교",
+    department:"학생부교과 전형 (일반학생/지역인재/지역사회배려/기회균형/선수출신자/특성화고/사회배려/농어촌/만학도/졸재직자)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"gknu_1000",
+    note:"학생부 100% = 1,000점. 교과 800점(기본560+실질240) + 출결 200점(기본140+실질60). 📌 국·수·영 상위 7 + 사·과·한국사 상위 2 + 진로선택 상위 3 = 총 12과목. 1·2학년 전학기+3-1 반영. 석차등급 환산: 1=1.000 ~ 9=0.000. 진로 A=1등급, B=2등급, C=3등급 (모든 과목 대상, 체육·예술 포함). A값=Σ(환산점수×이수단위)/Σ이수단위. 교과=560+240×A",
+    active:true
+  },
+  {
+    id:"gknu_music",
+    university:"국립경국대학교",
+    department:"실기전형 - 공연예술음악학전공 (성악/피아노/관현악/작곡/실용음악)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"gknu_music",
+    note:"실기 80%(800점) + 학생부 20%(교과112+60+출결28+12=160점). 반영교과는 일반전형과 동일. 📌 진로과목: ⭐전 교과 진로선택 상위 3과목을 별도 풀로 반영⭐",
+    active:true
+  },
+  {
+    id:"gknu_art",
+    university:"국립경국대학교",
+    department:"실기전형 - 미술학전공 (한국화/서양화/입체조형)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"gknu_music",
+    note:"실기 80%(800점) + 학생부 20%(교과160+출결40=200점). 반영교과는 일반전형과 동일. 📌 진로과목: ⭐전 교과 진로선택 상위 3과목을 별도 풀로 반영⭐",
+    active:true
+  },
+  {
+    id:"gknu_pe",
+    university:"국립경국대학교",
+    department:"실기전형 - 체육학전공",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"gknu_pe",
+    note:"실기 60%(600점) + 학생부 40%(교과320+출결80=400점). 반영교과는 일반전형과 동일. 📌 진로과목: ⭐전 교과 진로선택 상위 3과목을 별도 풀로 반영⭐",
+    active:true
+  },
+  {
+    id:"gknu_sports",
+    university:"국립경국대학교",
+    department:"체육특기자전형 (체육학/경기지도학과)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"gknu_sports",
+    note:"실적 70%(700점) + 학생부 30%(교과240+출결60=300점). 반영교과는 일반전형과 동일. 📌 진로과목: ⭐전 교과 진로선택 상위 3과목을 별도 풀로 반영⭐",
+    active:true
+  },
+  // ── 대전대학교 2026 ──
+  {
+    id:"dju_jungjeom",
+    university:"대전대학교",
+    department:"교과중점전형 (일반학과 - 교과중점/고른기회/농어촌/기회균형/실기위주)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"dju_basic",
+    note:"학생부 100%(1,000점) = 교과90%(900점)+출결10%(100점). 국/영/수/사회·과학 각 교과군별 상위 2과목씩 총 8과목, 교과군별 25% 동일 반영. 이수단위 2 이상 과목 중 석차등급 우수 과목 선택. 📌 진로과목: 미반영 (교과중점/군사학과/고른기회/농어촌/기회균형/실기위주 전형은 진로선택 반영 안 함)",
+    active:true
+  },
+  {
+    id:"dju_interview",
+    university:"대전대학교",
+    department:"교과면접전형 (일반학과 - 학생부 60%+면접 40%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"dju_interview",
+    note:"학생부 60%(600점) = 교과540+출결60. 면접 400점 별도(총 1,000점). 📌 국/영/수/사회·과학에서 최우수 6과목(과목당 최대 2과목) 선택 → 만점-{(합/6-1)×10}. 진로선택 가산점: 반영교과(국·영·수·사·과) 내 상위 2과목 이수단위 가중평균, 등급 1.00~2.99→9·3.00~5.99→7·6.00~9.00→5점 (A=9·B=7·C=5). 2과목 미만 시 가산점 미적용. 진로 합산 후 학생부 총점 초과 불가",
+    active:true
+  },
+  {
+    id:"dju_region1",
+    university:"대전대학교",
+    department:"지역인재Ⅰ전형 (대전/세종/충남/충북 소재 고교 출신)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"dju_region",
+    note:"학생부 100%(1,000점) = 교과900+출결100. 대전·세종·충남·충북 고교 졸업(예정)자. 📌 교과면접전형과 동일 산출 방식: 국/영/수/사회·과학 최우수 6과목 + 진로선택 가산점(반영교과 내 상위 2과목, 등급 1.00~2.99→9·3.00~5.99→7·6.00~9.00→5점, A=9·B=7·C=5, 이수단위 가중평균). 2과목 미만 시 가산점 미적용",
+    active:true
+  },
+  {
+    id:"dju_military",
+    university:"대전대학교",
+    department:"군사학과전형 (1단계 5배수 - 학생부 100%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"dju_military",
+    note:"1단계(5배수 선발): 학생부 100%(700점) = 교과90%(630점)+출결10%(70점). 2단계: 면접200+체력100+신체/인성/신원조사. 국/영/수/사회·과학 각 2과목씩 총 8과목. 수능최저: 국/수/영 중 1개 5등급 이내. 📌 진로과목: 미반영 (8과목 방식 전형)",
+    active:true
+  },
+  {
+    id:"dju_sports",
+    university:"대전대학교",
+    department:"실기위주전형 - 스포츠운동/건강재활학과",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"dju_sports",
+    note:"학생부 40%(400점) = 교과360+출결40, 실기 60%(600점) 별도. 교과반영은 교과중점전형과 동일 (국/영/수/사회·과학 각 교과군 2과목씩). 📌 진로과목: 미반영 (8과목 방식 전형)",
+    active:true
+  },
+  // ── 중부대학교 2026 ──
+  {
+    id:"jb_school_life",
+    university:"중부대학교",
+    department:"학교생활우수자전형 (학생부 70%+면접 30%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_700",
+    note:"학생부 70%(700점) + 면접 30%(300점) = 1,000점. 국/영/수/사회(한국사 포함)/과학 상위 10과목(3-1까지, 진로선택 포함)을 평균등급 → 환산표. 수능최저 없음. 📌 반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격). 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_aviation_op",
+    university:"중부대학교",
+    department:"학교생활우수자(항공운항서비스) (학생부 50%+면접 50%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_500",
+    note:"학생부 50%(500점) + 면접 50%(500점) = 1,000점. 10과목 평균등급 → 환산표(0.25등급 간격). 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_aviation_svc",
+    university:"중부대학교",
+    department:"학교생활우수자(항공서비스) (학생부 50%+면접 50%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_500",
+    note:"학생부 50%(500점) + 면접 50%(500점) = 1,000점. 10과목 평균등급 → 환산표(0.25등급 간격). 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_record",
+    university:"중부대학교",
+    department:"학생부우수자전형 (학생부 100%) - 921명",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_1000",
+    note:"학생부 100%(1,000점). 국/영/수/사회(한국사 포함)/과학 상위 10과목(3-1까지, 진로선택 포함)을 평균등급 → 환산표. 면접/수능최저 없음. 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 진로선택은 과목명 키워드로 동일 교과 판별(엄격 화이트리스트)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_region1",
+    university:"중부대학교",
+    department:"지역인재Ⅰ전형 (학생부 100%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_1000",
+    note:"학생부 100%(1,000점). 지역인재 대상 고교 출신자 지원 가능. 학생부우수자전형과 동일 산출 방식. 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_region2",
+    university:"중부대학교",
+    department:"지역인재Ⅱ전형 (학생부 100%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_1000",
+    note:"학생부 100%(1,000점). 학생부우수자전형과 동일 산출 방식. 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_bohun",
+    university:"중부대학교",
+    department:"국가보훈대상자전형 (학생부 100%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_1000",
+    note:"학생부 100%(1,000점). 학생부우수자전형과 동일 산출 방식. 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_rural",
+    university:"중부대학교",
+    department:"농어촌학생전형 (정원외, 학생부 100%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_1000",
+    note:"학생부 100%(1,000점). 학생부우수자전형과 동일 산출 방식. 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_opportunity",
+    university:"중부대학교",
+    department:"기초/차상위/한부모가족 지원대상자전형 (정원외, 학생부 100%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_1000",
+    note:"학생부 100%(1,000점). 학생부우수자전형과 동일 산출 방식. 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_special_edu",
+    university:"중부대학교",
+    department:"특수교육대상자전형 (정원외, 학생부 100%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_1000",
+    note:"학생부 100%(1,000점). 학생부우수자전형과 동일 산출 방식. 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_practical",
+    university:"중부대학교",
+    department:"실기우수자전형 (학생부 30%+실기 70%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_300",
+    note:"학생부 30%(300점) + 실기 70%(700점) = 1,000점. 10과목 평균등급 → 환산표. 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  {
+    id:"jb_sports",
+    university:"중부대학교",
+    department:"경기실적전형 (학생부 20%+출결 10%+실적 70%)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"jb_200",
+    note:"학생부 교과 20%(200점) + 출결 10%(100점) + 서류(실적) 70%(700점) = 1,000점. 스포츠재활복지/스포츠건강관리학과. 📌 진로과목: ⭐반영교과(국·영·수·사(한국사)·과) + 국·외·수·사·과 키워드 있는 진로선택만 포함(엄격)⭐. 진로 A=2·B=4·C=6등급. 부족 시 9등급 보충",
+    active:true
+  },
+  // ── 인하공업전문대학 2026 ──
+  {
+    id:"inha_general",
+    university:"인하공업전문대학",
+    department:"일반고/특성화고 전형 - 비면접학과 (전 학과, 항공운항·항공경영·호텔경영 제외)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"inha_200",
+    note:"학생부 100%(200점). 전 과목 최우수 1개 학기 100% 반영. 환산식: 25×(9-최우수학기등급). 출결가산점 별도(최대20점). 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"inha_interview",
+    university:"인하공업전문대학",
+    department:"일반고/특성화고 전형 - 면접학과 (항공운항과·항공경영학과·호텔경영학과)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"inha_500",
+    note:"학생부 40%(200점) + 면접 60%(300점) = 500점. 수시 면접학과. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"inha_rural",
+    university:"인하공업전문대학",
+    department:"농어촌전형 - 비면접학과 (정원외)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"inha_200",
+    note:"학생부 100%(200점). 농어촌 지역 출신자(정원외). 일반고 전형과 동일 산출 방식. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"inha_rural_interview",
+    university:"인하공업전문대학",
+    department:"농어촌전형 - 면접학과 (항공운항과·항공경영학과·호텔경영학과, 정원외)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"inha_500",
+    note:"학생부 40%(200점) + 면접 60%(300점) = 500점. 농어촌 지역 출신자(정원외). 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"inha_low",
+    university:"인하공업전문대학",
+    department:"수급자전형 - 비면접학과 (정원외)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"inha_200",
+    note:"학생부 100%(200점). 기초생활수급자·차상위계층·한부모가족(정원외). 일반고 전형과 동일 산출 방식. 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"inha_low_interview",
+    university:"인하공업전문대학",
+    department:"수급자전형 - 면접학과 (항공운항과·항공경영학과·호텔경영학과, 정원외)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"inha_500",
+    note:"학생부 40%(200점) + 면접 60%(300점) = 500점. 기초생활수급자 등(정원외). 📌 진로과목: 미반영 (전과목 학기평균 방식에서 성취도 과목 제외)",
+    active:true
+  },
+  {
+    id:"inha_special",
+    university:"인하공업전문대학",
+    department:"특기자(어학)전형 - 항공기계공학과·항공운항과",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"inha_toeic",
+    note:"어학 100% 반영. TOEIC 600점 이상 또는 TOEIC Speaking 120점 이상 (본 산출기는 학생부 기준이므로 참고용). 📌 진로과목: 해당없음 (어학 성적 100% 반영 전형)",
+    active:true
+  },
+  {
+    id:"inha_suneung",
+    university:"인하공업전문대학",
+    department:"정시 일반전형 (수능)",
+    reflect_subjects:[],
+    reflect_count:0,
+    scoring:"inha_suneung",
+    note:"수능 백분위 최우수 2개 영역 반영(200점) + 영어 가산점 최대 20점. 항공운항과는 면접 300점 추가. 본 산출기는 내신 기준 참고용. 📌 진로과목: 해당없음 (수능 100% 반영 전형)",
+    active:true
+  }
+];
+
+// 구간표 (항공관광·한서인재)
+const INTERVAL_540 = [
+  {min:9.400,max:10.000,score:540.0},
+  {min:8.900,max:9.399,score:523.8},
+  {min:8.600,max:8.899,score:511.65},
+  {min:8.300,max:8.599,score:499.5},
+  {min:8.000,max:8.299,score:487.35},
+  {min:7.700,max:7.999,score:475.2},
+  {min:7.400,max:7.699,score:463.05},
+  {min:7.100,max:7.399,score:450.9},
+  {min:6.800,max:7.099,score:438.75},
+  {min:6.500,max:6.799,score:426.6},
+  {min:6.150,max:6.499,score:414.45},
+  {min:5.700,max:6.199,score:402.3},
+  {min:5.350,max:5.699,score:390.15},
+  {min:5.050,max:5.349,score:378.0},
+  {min:4.750,max:5.049,score:365.85},
+  {min:4.450,max:4.749,score:353.7},
+  {min:4.150,max:4.449,score:341.55},
+  {min:3.850,max:4.149,score:329.4},
+  {min:3.550,max:3.849,score:317.25},
+  {min:3.250,max:3.549,score:305.1},
+  {min:2.950,max:3.249,score:292.95},
+  {min:2.650,max:2.949,score:280.8},
+  {min:2.000,max:2.649,score:270.0}
+];
+
+// ════════════════════════════════════
+// UTILS
+// ════════════════════════════════════
+function toast(m,d=2500){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d)}
+
+function parseGradeValue(val){
+  if(!val||!val.trim()) return null;
+  const t=val.trim().toUpperCase();
+  if(JINRO_MAP[t]!==undefined) return JINRO_MAP[t];
+  const n=parseInt(t);
+  return(!isNaN(n)&&n>=1&&n<=9)?n:null;
+}
+
+function getScore(grade,isJinro){
+  if(isJinro){
+    if(JINRO_SCORE_MAP[grade]!==undefined) return JINRO_SCORE_MAP[grade];
+    return GRADE_SCORE[grade]||0;
+  }
+  return GRADE_SCORE[grade]||0;
+}
+
+function lookupInterval(x){
+  for(const r of INTERVAL_540) if(x>=r.min&&x<=r.max) return r.score;
+  return 270.0;
+}
+
+function percentToGrade(pct){
+  if(pct>=97) return 1;
+  if(pct>=93) return 2;
+  if(pct>=88) return 3;
+  if(pct>=82) return 4;
+  if(pct>=75) return 5;
+  if(pct>=67) return 6;
+  if(pct>=58) return 7;
+  if(pct>=48) return 8;
+  return 9;
+}
+
+function gradeClass(g){
+  if(g>=1&&g<=9) return 'g'+g;
+  return 'gna';
+}
+
+// ════════════════════════════════════
+// 과목 단위 성적 데이터
+// ════════════════════════════════════
+const SUBJECT_CATS=['국어','수학','영어','한국사','사회','과학','진로선택','기타','체육'];
+
+// 미리 입력된 성적 (SA 고1·2 내신)
+const DEFAULT_GRADES = [
+  // 1-1
+  {sem:'1-1',cat:'국어',name:'국어',unit:4,grade:'4'},
+  {sem:'1-1',cat:'수학',name:'수학',unit:4,grade:'4'},
+  {sem:'1-1',cat:'영어',name:'영어',unit:4,grade:'4'},
+  {sem:'1-1',cat:'한국사',name:'한국사',unit:3,grade:'5'},
+  {sem:'1-1',cat:'사회',name:'통합사회',unit:3,grade:'4'},
+  {sem:'1-1',cat:'과학',name:'통합과학',unit:3,grade:'4'},
+  {sem:'1-1',cat:'기타',name:'정보',unit:2,grade:'3'},
+  {sem:'1-1',cat:'진로선택',name:'체육',unit:2,grade:'A'},
+  {sem:'1-1',cat:'진로선택',name:'미술',unit:3,grade:'B'},
+  // 1-2
+  {sem:'1-2',cat:'국어',name:'국어',unit:4,grade:'5'},
+  {sem:'1-2',cat:'수학',name:'수학',unit:4,grade:'4'},
+  {sem:'1-2',cat:'영어',name:'영어',unit:4,grade:'5'},
+  {sem:'1-2',cat:'한국사',name:'한국사',unit:3,grade:'6'},
+  {sem:'1-2',cat:'사회',name:'통합사회',unit:3,grade:'5'},
+  {sem:'1-2',cat:'과학',name:'통합과학',unit:3,grade:'4'},
+  {sem:'1-2',cat:'기타',name:'정보',unit:2,grade:'4'},
+  {sem:'1-2',cat:'진로선택',name:'체육',unit:2,grade:'A'},
+  {sem:'1-2',cat:'진로선택',name:'음악',unit:3,grade:'A'},
+  // 2-1
+  {sem:'2-1',cat:'국어',name:'문학',unit:4,grade:'4'},
+  {sem:'2-1',cat:'수학',name:'수학Ⅰ',unit:4,grade:'5'},
+  {sem:'2-1',cat:'수학',name:'확률과 통계',unit:2,grade:'4'},
+  {sem:'2-1',cat:'영어',name:'영어Ⅰ',unit:4,grade:'5'},
+  {sem:'2-1',cat:'과학',name:'물리학Ⅰ',unit:2,grade:'6'},
+  {sem:'2-1',cat:'과학',name:'화학Ⅰ',unit:2,grade:'5'},
+  {sem:'2-1',cat:'과학',name:'생명과학Ⅰ',unit:2,grade:'5'},
+  {sem:'2-1',cat:'과학',name:'지구과학Ⅰ',unit:2,grade:'5'},
+  {sem:'2-1',cat:'기타',name:'일본어Ⅰ',unit:2,grade:'6'},
+  {sem:'2-1',cat:'기타',name:'미술 창작',unit:1,grade:'A'},
+  {sem:'2-1',cat:'진로선택',name:'인공지능 기초',unit:1,grade:'A'},
+  {sem:'2-1',cat:'체육',name:'운동과 건강',unit:2,grade:'A'},
+  // 2-2
+  {sem:'2-2',cat:'국어',name:'독서',unit:4,grade:'4'},
+  {sem:'2-2',cat:'수학',name:'수학Ⅱ',unit:4,grade:'5'},
+  {sem:'2-2',cat:'수학',name:'확률과 통계',unit:2,grade:'5'},
+  {sem:'2-2',cat:'영어',name:'영어Ⅱ',unit:4,grade:'5'},
+  {sem:'2-2',cat:'과학',name:'물리학Ⅰ',unit:2,grade:'7'},
+  {sem:'2-2',cat:'과학',name:'화학Ⅰ',unit:2,grade:'5'},
+  {sem:'2-2',cat:'과학',name:'생명과학Ⅰ',unit:2,grade:'5'},
+  {sem:'2-2',cat:'과학',name:'지구과학Ⅰ',unit:2,grade:'6'},
+  {sem:'2-2',cat:'기타',name:'일본어Ⅰ',unit:2,grade:'6'},
+  {sem:'2-2',cat:'진로선택',name:'미술 창작',unit:1,grade:'A'},
+  {sem:'2-2',cat:'진로선택',name:'인공지능 기초',unit:1,grade:'A'},
+  {sem:'2-2',cat:'체육',name:'운동과 건강',unit:2,grade:'A'},
+];
+
+// ════════════════════════════════════
+// localStorage: 사용자 입력 저장/복원
+// ════════════════════════════════════
+const STORAGE_KEY = 'grade_calc_my_grades_v1';
+
+function loadGrades(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){
+      const parsed = JSON.parse(saved);
+      if(Array.isArray(parsed)) return parsed;
+    }
+  }catch(e){ console.warn('[loadGrades] 복원 실패', e); }
+  // 저장된 값이 없으면 기본 데이터 복사본을 반환 (deep copy)
+  return DEFAULT_GRADES.map(r=>({...r}));
+}
+
+function saveGrades(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(MY_GRADES));
+  }catch(e){ console.warn('[saveGrades] 저장 실패', e); }
+}
+
+function resetGrades(){
+  if(!confirm('입력한 등급을 모두 초기값으로 되돌릴까요?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  MY_GRADES.length = 0;
+  DEFAULT_GRADES.forEach(r=>MY_GRADES.push({...r}));
+  renderGradeAccordion();
+  toast('초기 등급으로 되돌렸습니다');
+}
+window.resetGrades = resetGrades;
+
+// ════════════════════════════════════
+// localStorage: 삭제한 대학·전형 목록 저장/복원
+// ════════════════════════════════════
+const UNIVS_STORAGE_KEY = 'grade_calc_removed_univs_v1';
+
+function loadRemovedUnivs(){
+  try{
+    const saved = localStorage.getItem(UNIVS_STORAGE_KEY);
+    if(saved){
+      const parsed = JSON.parse(saved);
+      if(Array.isArray(parsed)) return new Set(parsed);
+    }
+  }catch(e){ console.warn('[loadRemovedUnivs] 복원 실패', e); }
+  return new Set();
+}
+
+function saveRemovedUnivs(){
+  try{
+    const removedIds = UNIVS.filter(u=>!u.active).map(u=>u.id);
+    localStorage.setItem(UNIVS_STORAGE_KEY, JSON.stringify(removedIds));
+  }catch(e){ console.warn('[saveRemovedUnivs] 저장 실패', e); }
+}
+
+function resetUnivs(){
+  if(!confirm('삭제한 전형들을 모두 복원할까요?')) return;
+  localStorage.removeItem(UNIVS_STORAGE_KEY);
+  UNIVS.forEach(u=>u.active=true);
+  renderUnivs();
+  toast('전형 목록을 복원했습니다');
+}
+window.resetUnivs = resetUnivs;
+
+// UNIVS 초기 로드 시 저장된 삭제 목록 적용
+(function applyRemovedUnivs(){
+  const removed = loadRemovedUnivs();
+  UNIVS.forEach(u=>{ if(removed.has(u.id)) u.active = false; });
+})();
+
+const MY_GRADES = loadGrades();
+
+let openSems={'1-1':false,'1-2':false,'2-1':false,'2-2':false,'3-1':false,'3-2':false};
+
+function renderGradeAccordion(){
+  const wrap=document.getElementById('gradeAccordion');
+  wrap.innerHTML=SEMESTERS.map(sem=>{
+    const rows=MY_GRADES.filter(g=>g.sem===sem);
+    const isOpen=openSems[sem];
+    let tableHtml='';
+    if(rows.length){
+      tableHtml=`<div style="overflow-x:auto"><table class="grade-table"><thead><tr>
+        <th style="width:18px"></th><th style="width:52px">교과</th><th style="min-width:70px">과목명</th><th style="width:36px">단위</th><th style="width:40px">등급</th>
+      </tr></thead><tbody>`;
+      rows.forEach(r=>{
+        const idx=MY_GRADES.indexOf(r);
+        tableHtml+=`<tr>
+          <td style="padding:.2rem"><input type="checkbox" class="univ-chk grade-chk" data-gidx="${idx}" onclick="event.stopPropagation()"></td>
+          <td><select onchange="MY_GRADES[${idx}].cat=this.value;saveGrades();autoRecalc()" style="width:100%;background:var(--bg3);color:var(--t);border:1px solid transparent;border-radius:5px;padding:.22rem .1rem;font-size:.7rem;font-family:var(--font-body);outline:none">
+            ${SUBJECT_CATS.map(c=>`<option value="${c}"${c===r.cat?' selected':''}>${c}</option>`).join('')}
+          </select></td>
+          <td><input class="name-input" value="${r.name}" onchange="MY_GRADES[${idx}].name=this.value;saveGrades();autoRecalc()"></td>
+          <td><input value="${r.unit}" type="number" min="1" max="9" style="width:34px" onchange="MY_GRADES[${idx}].unit=parseInt(this.value)||1;saveGrades();autoRecalc()"></td>
+          <td><input value="${r.grade}" maxlength="2" onchange="MY_GRADES[${idx}].grade=this.value;saveGrades();autoRecalc()"></td>
+        </tr>`;
+      });
+      tableHtml+=`</tbody></table></div>`;
+    } else {
+      tableHtml=`<div style="color:var(--t3);font-size:.75rem;text-align:center;padding:.5rem 0">과목이 없습니다.</div>`;
+    }
+    tableHtml+=`<button class="add-row-btn" onclick="addRow('${sem}')">+ 과목 추가</button>`;
+
+    return `<div class="sem-group${isOpen?' open':''}" id="sem_${sem.replace('-','_')}">
+      <div class="sem-header" onclick="toggleSem('${sem}')">
+        <span class="sem-arrow">▶</span>
+        <span class="sem-title">${sem} 학기</span>
+        <span class="sem-cnt">${rows.length}과목</span>
+      </div>
+      <div class="sem-body"><div class="sem-body-inner">${tableHtml}</div></div>
+    </div>`;
+  }).join('');
+
+  // 대시보드도 함께 갱신
+  renderSummaryDash();
+}
+
+// ════════════════════════════════════
+// 상단 고정 요약 대시보드
+// ════════════════════════════════════
+function toggleSummaryDash(){
+  const dash=document.getElementById('summaryDash');
+  if(dash) dash.classList.toggle('open');
+}
+
+function toggleCard(cardId, ev){
+  if(ev) ev.stopPropagation();
+  const el=document.getElementById(cardId);
+  if(el) el.classList.toggle('open');
+}
+window.toggleCard=toggleCard;
+
+function renderSummaryDash(){
+  const body=document.getElementById('summaryDashBody');
+  const totalEl=document.getElementById('summaryDashTotal');
+  if(!body||!totalEl) return;
+
+  // 카테고리 순서
+  const ORDER=['국어','수학','영어','사회','과학','한국사','진로선택','기타','체육'];
+  // 학기 순서로 과목 정렬
+  const SEM_ORDER={'1-1':1,'1-2':2,'2-1':3,'2-2':4,'3-1':5,'3-2':6};
+
+  // 카테고리별로 그룹핑
+  const byCat={};
+  for(const cat of ORDER) byCat[cat]=[];
+  for(const r of MY_GRADES){
+    const raw=(r.grade||'').trim();
+    if(!raw) continue; // 빈 등급은 제외
+    if(!byCat[r.cat]) byCat[r.cat]=[];
+    byCat[r.cat].push(r);
+  }
+  // 각 카테고리 내에서 학기 순 정렬
+  for(const cat of Object.keys(byCat)){
+    byCat[cat].sort((a,b)=>(SEM_ORDER[a.sem]||99)-(SEM_ORDER[b.sem]||99));
+  }
+
+  // HTML 생성
+  let html='';
+  let totalCount=0, numericSum=0, numericCount=0;
+  for(const cat of ORDER){
+    const arr=byCat[cat]||[];
+    if(arr.length===0) continue;
+    totalCount+=arr.length;
+
+    // 등급 태그들
+    const gradeTags=arr.map(r=>{
+      const g=r.grade.trim().toUpperCase();
+      const isABC=(g==='A'||g==='B'||g==='C');
+      return `<span class="g${isABC?' g-abc':''}" title="${r.sem} ${r.name}">${g}</span>`;
+    }).join('');
+
+    // 평균 계산 (숫자 등급만)
+    const numGrades=arr.map(r=>parseInt(r.grade.trim())).filter(n=>!isNaN(n)&&n>=1&&n<=9);
+    const abcCount=arr.length-numGrades.length;
+    let avgStr='', avgSubStr='';
+    if(numGrades.length>0){
+      const avg=numGrades.reduce((a,b)=>a+b,0)/numGrades.length;
+      avgStr=avg.toFixed(2);
+      avgSubStr=`${numGrades.length}과목`;
+      if(abcCount>0) avgSubStr+=` +A/B/C ${abcCount}`;
+      numericSum+=numGrades.reduce((a,b)=>a+b,0);
+      numericCount+=numGrades.length;
+    } else {
+      avgStr='—';
+      avgSubStr=`A/B/C ${abcCount}`;
+    }
+
+    html+=`<div class="summary-row">
+      <div class="summary-cat">${cat}</div>
+      <div class="summary-grades">${gradeTags}</div>
+      <div class="summary-avg">${avgStr}<span class="sub">${avgSubStr}</span></div>
+    </div>`;
+  }
+
+  if(totalCount===0){
+    body.innerHTML=`<div class="summary-empty">입력된 등급이 없습니다.</div>`;
+    totalEl.textContent='—';
+    return;
+  }
+
+  body.innerHTML=html;
+
+  // 상단 토글 텍스트: 전체 숫자 등급 평균
+  if(numericCount>0){
+    const totalAvg=numericSum/numericCount;
+    totalEl.innerHTML=`전체 평균 <b>${totalAvg.toFixed(2)}등급</b> · ${totalCount}과목`;
+  } else {
+    totalEl.innerHTML=`${totalCount}과목 (A/B/C만)`;
+  }
+}
+
+function toggleSem(sem){
+  openSems[sem]=!openSems[sem];
+  const el=document.getElementById('sem_'+sem.replace('-','_'));
+  if(el) el.classList.toggle('open');
+}
+
+// 결과가 이미 표시된 적이 있으면 자동 재계산 (사용자 혼란 방지)
+let _hasCalculated = false;
+function autoRecalc(){
+  if(_hasCalculated){
+    try{ calculateAll(); }catch(e){ console.warn('[autoRecalc]', e); }
+  }
+}
+
+function addRow(sem){
+  openSems[sem]=true;
+  MY_GRADES.push({sem,cat:'국어',name:'',unit:3,grade:''});
+  saveGrades();
+  renderGradeAccordion();
+  autoRecalc();
+}
+
+function deleteSelectedGrades(){
+  const checks=document.querySelectorAll('.grade-chk:checked');
+  if(checks.length===0){toast('삭제할 과목을 선택하세요');return;}
+  if(!confirm(`선택한 ${checks.length}개 과목을 삭제할까요?`)) return;
+  const idxs=[...checks].map(c=>parseInt(c.dataset.gidx)).sort((a,b)=>b-a);
+  idxs.forEach(idx=>MY_GRADES.splice(idx,1));
+  saveGrades();
+  renderGradeAccordion();
+  autoRecalc();
+  toast(`${checks.length}개 과목 삭제됨`);
+}
+
+renderGradeAccordion();
+
+// ════════════════════════════════════
+// 등급 수집 (과목 단위 → 교과별/학기별 배열)
+// ════════════════════════════════════
+function collectGrades(){
+  // 교과별 전체 등급 배열 (학기 정보 포함)
+  const grades={};
+  for(const cat of SUBJECT_CATS) grades[cat]=[];
+  for(const r of MY_GRADES){
+    const v=parseGradeValue(r.grade);
+    if(v===null) continue;
+    if(!grades[r.cat]) grades[r.cat]=[];
+    // 원본 입력이 A/B/C 문자였는지 구분 (성취도 과목 판별용)
+    const raw=r.grade.trim().toUpperCase();
+    const isABC=(JINRO_MAP[raw]!==undefined);
+    grades[r.cat].push({grade:v, semester:r.sem, unit:r.unit||1, name:r.name, isABC});
+  }
+  return grades;
+}
+
+// 학기별 전과목 평균등급 (연성대 등에서 사용)
+function getSemesterAverages(){
+  const semData={};
+  for(const r of MY_GRADES){
+    const v=parseGradeValue(r.grade);
+    if(v===null) continue;
+    if(!semData[r.sem]) semData[r.sem]={sumGU:0, sumU:0, count:0};
+    const u=r.unit||1;
+    semData[r.sem].sumGU+=v*u;
+    semData[r.sem].sumU+=u;
+    semData[r.sem].count++;
+  }
+  const result=[];
+  for(const [sem,d] of Object.entries(semData)){
+    if(d.sumU>0) result.push({sem, avg:d.sumGU/d.sumU, count:d.count, units:d.sumU});
+  }
+  return result;
+}
+
+// ════════════════════════════════════
+// 대학 아코디언 렌더
+// ════════════════════════════════════
+function renderUnivs(){
+  const c=document.getElementById('univList');
+  const TL={"basic":"학생부 100%","interview":"학생부60%+면접40%","unit":"이수단위 적용","yeonsung_1000":"학생부 100%","yeonsung_400":"학생부40%+면접60%","suwon_1000":"내신 100%","suwon_400":"내신40%+면접60%","suwon_200":"내신20%+실기80%","dongyang_1000":"학생부 100%","baekseok_100":"학생부 100%","baekseok_60":"학생부60%+면접40%","baekseok_20":"학생부20%+실기80%","bucheon_100":"교과 100%","bucheon_80":"교과80%+면접20%","bucheon_40":"교과40%+면접60%","gknu_1000":"학생부 100%","gknu_music":"실기80%+학생부20%","gknu_art":"실기80%+학생부20%","gknu_pe":"실기60%+학생부40%","gknu_sports":"실적70%+학생부30%","dju_basic":"학생부 100%","dju_interview":"학생부60%+면접40%","dju_region":"학생부 100%","dju_military":"학생부 100% (1단계)","dju_sports":"학생부40%+실기60%","jb_1000":"학생부 100%","jb_700":"학생부70%+면접30%","jb_500":"학생부50%+면접50%","jb_300":"학생부30%+실기70%","jb_200":"학생부20%+실적70%","inha_200":"학생부 100%","inha_500":"학생부40%+면접60%","inha_toeic":"어학(TOEIC) 100%","inha_suneung":"수능 100%"};
+
+  // 학교별 그룹핑 (active=false인 전형은 제외)
+  const groups={};
+  UNIVS.forEach((u,i)=>{
+    if(!u.active) return;
+    if(!groups[u.university]) groups[u.university]=[];
+    groups[u.university].push({u,i});
+  });
+
+  c.innerHTML=Object.entries(groups).map(([uniName,items])=>{
+    const safeId=uniName.replace(/[^가-힣a-zA-Z0-9]/g,'');
+
+    const innerCards=items.map(({u,i})=>{
+      const reflectInfo=u.reflect_subjects.length?
+        `반영 교과: <b>${u.reflect_subjects.join(', ')}</b> · 교과별 상위 <b>${u.reflect_count}과목</b> 반영<br>`:''
+      ;
+      return `
+      <div class="univ-section" id="univ_${u.id}">
+        <div class="univ-header" onclick="toggleAccordion('${u.id}')">
+          <span class="univ-arrow">▶</span>
+          <div class="univ-info">
+            <div class="univ-dept-line"><span style="font-size:.68rem;color:var(--t3);font-weight:400">${TL[u.scoring]||''}</span></div>
+            <div class="univ-dept">${u.department}</div>
+          </div>
+          <div class="univ-grade-badge" id="badge_${u.id}">
+            <span class="grade-label">등급</span>
+            <span class="grade-num">-</span>
+          </div>
+          <input type="checkbox" class="univ-chk" data-idx="${i}" onclick="event.stopPropagation()" title="선택">
+        </div>
+        <div class="univ-body">
+          <div class="univ-content">
+            <div class="univ-detail">
+              ${reflectInfo}📎 ${u.note}
+            </div>
+            <div class="score-detail" id="detail_${u.id}">
+              <div style="color:var(--t3);text-align:center;padding:.3rem 0">등급을 입력하고 산출하면 여기에 상세 결과가 표시됩니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="school-group open" id="school_${safeId}">
+      <div class="school-header" onclick="toggleSchool('${safeId}')">
+        <span class="school-arrow">▶</span>
+        <span class="school-name">${uniName}</span>
+        <span class="school-count">${items.length}개 전형</span>
+      </div>
+      <div class="school-body">
+        <div class="school-body-inner">
+          ${innerCards}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  updateUnivCount();
+}
+renderUnivs();
+
+function toggleSchool(safeId){
+  document.getElementById('school_'+safeId).classList.toggle('open');
+}
+
+function updateUnivCount(){
+  const cnt=UNIVS.filter(u=>u.active).length;
+  document.getElementById('s2t').textContent=`대학·전형 목록 (${cnt}개)`;
+}
+
+function toggleAccordion(id){
+  document.getElementById('univ_'+id).classList.toggle('open');
+}
+
+function deleteSelected(){
+  try {
+    // 체크된 '전형' 체크박스만 (성적표의 .grade-chk 제외, data-idx 있는 것만)
+    const allChecked=document.querySelectorAll('.univ-chk:checked');
+    const checks=[...allChecked].filter(c=>!c.classList.contains('grade-chk') && c.dataset.idx!==undefined);
+    if(checks.length===0){toast('삭제할 전형을 선택하세요');return;}
+    if(!confirm(`선택한 ${checks.length}개 전형을 삭제할까요?`)) return;
+    
+    // 각 체크박스에서 속한 .univ-section을 찾아 직접 제거 (data-idx 의존 최소화)
+    let removed=0;
+    checks.forEach(c=>{
+      const idx=parseInt(c.dataset.idx);
+      if(!isNaN(idx) && UNIVS[idx]){ UNIVS[idx].active=false; }
+      const section=c.closest('.univ-section');
+      if(section){ section.remove(); removed++; }
+    });
+    saveRemovedUnivs();
+    
+    updateUnivCount();
+    // 빈 학교 그룹 제거 + 카운트 갱신
+    document.querySelectorAll('.school-group').forEach(g=>{
+      const remaining=g.querySelectorAll('.univ-section');
+      if(remaining.length===0) g.remove();
+      else {
+        const cntEl=g.querySelector('.school-count');
+        if(cntEl) cntEl.textContent=`${remaining.length}개 전형`;
+      }
+    });
+    toast(`${removed}개 전형 삭제됨`);
+  } catch(err) {
+    // 에러를 사용자가 볼 수 있게 toast로 표시
+    toast('삭제 오류: '+err.message, 5000);
+    console.error('[deleteSelected 에러]', err);
+  }
+}
+// window 전역에 강제 노출 (혹시 스코프 문제 대비)
+window.deleteSelected=deleteSelected;
+
+// ════════════════════════════════════
+// 산출
+// ════════════════════════════════════
+// 💡 새 대학 산출 로직 추가 시 체크리스트:
+//   □ 성취도 A/B/C 과목을 일반교과에서 제외했는가? (상단 주석 블록 참조)
+//     - collectGrades() 사용 시: .isABC 플래그로 필터
+//     - MY_GRADES 직접 순회 시: ['A','B','C'].includes(raw) && r.cat!=='진로선택' 제외
+//   □ 반영 학기 범위는 맞는가? (대부분 3-1까지, r.sem==='3-2' 제외)
+//   □ 대학별 전용 테이블/환산식의 출처(모집요강 페이지)를 주석에 남겼는가?
+function calculateAll(){
+  const grades=collectGrades();
+  const hasAny=Object.values(grades).some(a=>a.length>0);
+  if(!hasAny){toast('등급을 최소 1개 입력하세요');return;}
+  _hasCalculated = true;
+
+  // 사회+과학 합산 풀
+  const socialScience=[...(grades['사회']||[]),...(grades['과학']||[])];
+
+  for(const u of UNIVS){
+    const badge=document.getElementById('badge_'+u.id);
+    const detailEl=document.getElementById('detail_'+u.id);
+
+    // DOM에서 삭제된 전형이거나 비활성이면 건너뛰기
+    if(!badge||!detailEl||!u.active){
+      continue;
+    }
+
+    // ── 부천대 산출 (최우수 2개 학기 이수단위가중 평균등급 → 반영점수) ──
+    if(u.scoring==='bucheon_100'||u.scoring==='bucheon_80'||u.scoring==='bucheon_40'){
+      // 학기별 이수단위 가중 평균등급 산출 (석차등급 1~9 과목만, A/B/C 성취도 과목은 별도 처리)
+      const bcSemData={};
+      for(const r of MY_GRADES){
+        const v=parseGradeValue(r.grade);
+        if(v===null) continue;
+        const raw=r.grade.trim().toUpperCase();
+        const isABC=(JINRO_MAP[raw]!==undefined);
+        // 석차등급(1~9) 과목만 학기 평균에 반영 (성취도 A/B/C 과목은 제외)
+        if(isABC) continue;
+        if(!bcSemData[r.sem]) bcSemData[r.sem]={sumGU:0, sumU:0, count:0};
+        const unit=r.unit||1;
+        bcSemData[r.sem].sumGU+=v*unit;
+        bcSemData[r.sem].sumU+=unit;
+        bcSemData[r.sem].count++;
+      }
+
+      const bcSemAvgs=[];
+      for(const [sem,d] of Object.entries(bcSemData)){
+        if(d.sumU>0) bcSemAvgs.push({sem, avg:d.sumGU/d.sumU, count:d.count, units:d.sumU});
+      }
+
+      if(bcSemAvgs.length===0){
+        badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num" style="color:var(--t3)">-</span>';
+        detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">반영 학기 등급이 입력되지 않았습니다.</div>';
+        continue;
+      }
+
+      // 최우수 2개 학기 (평균등급 낮을수록 좋음)
+      bcSemAvgs.sort((a,b)=>a.avg-b.avg);
+      const bcBest2=bcSemAvgs.slice(0,Math.min(2,bcSemAvgs.length));
+      const bcGrade=bcBest2.reduce((s,x)=>s+x.avg,0)/bcBest2.length;
+
+      // 반영점수 = 240 + (9 - 등급) × 20 (소수점 셋째자리 이하 무시 후 둘째자리까지 차등)
+      const bcTruncGrade=Math.floor(bcGrade*100)/100; // 소수점 셋째자리 이하 무시
+      const bcReflectScore=240+(9-bcTruncGrade)*20;
+      const bcReflectClamped=Math.max(240,Math.min(400,bcReflectScore));
+
+      // 출결 가산점 (만점 가정)
+      const bcAttendance=20;
+
+      // 전형별 총점 계산
+      let bcTotal, bcMax, bcExtraNote='';
+      if(u.scoring==='bucheon_100'){
+        bcTotal=bcReflectClamped+bcAttendance;
+        bcMax=420; // 400 + 20 가산점
+        bcExtraNote='';
+      } else if(u.scoring==='bucheon_80'){
+        bcTotal=bcReflectClamped+bcAttendance; // 면접 미포함
+        bcMax=420;
+        bcExtraNote='<div class="row" style="color:var(--or)">※ 면접 100점 별도 (총 500점+가산점 만점)</div>';
+      } else { // bucheon_40
+        bcTotal=bcReflectClamped+bcAttendance; // 면접 미포함
+        bcMax=420;
+        bcExtraNote='<div class="row" style="color:var(--or)">※ 면접 600점 별도 (총 1,000점+가산점 만점)</div>';
+      }
+
+      // 배지 표시
+      badge.innerHTML=`<span class="grade-label">${bcReflectClamped.toFixed(1)}/400점</span><span class="grade-num">${bcGrade.toFixed(1)}등급</span>`;
+      badge.querySelector('.grade-num').style.color=
+        bcGrade<=2?'var(--gn)':bcGrade<=4?'var(--ac)':bcGrade<=6?'var(--or)':'var(--rd)';
+
+      // 상세 표시
+      let bcDetailHtml=bcBest2.map((s,i)=>`<div class="row"><span>${i+1}순위 학기 [${s.sem}]</span><b>평균 ${s.avg.toFixed(3)}등급 (${s.count}과목, ${s.units}단위)</b></div>`).join('');
+      if(bcSemAvgs.length>2){
+        bcDetailHtml+=bcSemAvgs.slice(2).map(s=>`<div class="row" style="color:var(--t3)"><span>미반영 [${s.sem}]</span><span>${s.avg.toFixed(3)}등급</span></div>`).join('');
+      }
+      bcDetailHtml+=`
+        <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+          <span>최우수 2개 학기 평균등급</span><b>${bcGrade.toFixed(3)}</b>
+        </div>
+        <div class="row"><span>등급 절사 (소수점 둘째자리)</span><b>${bcTruncGrade.toFixed(2)}</b></div>
+        <div class="row"><span>교과등급 반영점수</span><b>${bcReflectClamped.toFixed(1)}점</b> / 400점 <span style="color:var(--t3)">(= 240 + (9-${bcTruncGrade.toFixed(2)})×20)</span></div>
+        <div class="row"><span>출결 가산점 (만점 가정)</span><b>${bcAttendance}점</b> / 20점</div>
+        <div class="row total-row"><span>학생부 소계 (가산점 포함)</span><b>${bcTotal.toFixed(1)} / ${bcMax}점</b></div>
+        ${bcExtraNote}
+        <div class="row" style="color:var(--t3)">※ 석차등급(1~9) 과목만 반영, 성취도(A/B/C) 과목 제외</div>`;
+
+      detailEl.innerHTML=bcDetailHtml;
+      continue;
+    }
+
+    // ── 동양미래대 산출 (우수 2개 학기 전과목 이수단위가중 평균등급, 교과90%+출결10%) ──
+    if(u.scoring==='dongyang_1000'){
+      // 학기별 이수단위 가중 평균등급 (석차등급 1~9 과목만, A/B/C 제외)
+      const dmuSemData={};
+      for(const r of MY_GRADES){
+        const v=parseGradeValue(r.grade);
+        if(v===null) continue;
+        const raw=r.grade.trim().toUpperCase();
+        const isABC=(JINRO_MAP[raw]!==undefined);
+        if(isABC) continue;
+        // 3학년 2학기 제외
+        if(r.sem==='3-2') continue;
+        if(!dmuSemData[r.sem]) dmuSemData[r.sem]={sumGU:0, sumU:0, count:0};
+        const unit=r.unit||1;
+        dmuSemData[r.sem].sumGU+=v*unit;
+        dmuSemData[r.sem].sumU+=unit;
+        dmuSemData[r.sem].count++;
+      }
+
+      // 석차등급 과목 3개 이상인 학기만 반영
+      const dmuSemAvgs=[];
+      for(const [sem,d] of Object.entries(dmuSemData)){
+        if(d.count>=3 && d.sumU>0) dmuSemAvgs.push({sem, avg:d.sumGU/d.sumU, count:d.count, units:d.sumU});
+      }
+
+      if(dmuSemAvgs.length===0){
+        badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num" style="color:var(--t3)">-</span>';
+        detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">반영 가능 학기가 없습니다. (석차등급 3과목 이상 필요)</div>';
+        continue;
+      }
+
+      // 우수 2개 학기
+      dmuSemAvgs.sort((a,b)=>a.avg-b.avg);
+      const dmuBest2=dmuSemAvgs.slice(0,Math.min(2,dmuSemAvgs.length));
+      const dmuGrade=dmuBest2.reduce((s,x)=>s+x.avg,0)/dmuBest2.length;
+
+      // 교과점수: 등급별 등간격 (1등급=900, 9등급=450 기준 추정, 등급당 약56.25점)
+      // 시행계획서 기반: 교과 최고 900점, 최저 450점 → (10 - 평균등급) × 56.25 + 393.75
+      // 좀 더 정확히: 교과점수 = 900 - (평균등급 - 1) × (900-450)/8 = 900 - (평균등급-1) × 56.25
+      const dmuGyogwa=900-(dmuGrade-1)*56.25;
+      const dmuGyogwaClamped=Math.max(450,Math.min(900,dmuGyogwa));
+
+      // 출결 만점 가정
+      const dmuAttend=100;
+      const dmuTotal=dmuGyogwaClamped+dmuAttend;
+
+      badge.innerHTML=`<span class="grade-label">${dmuTotal.toFixed(1)}/1000점</span><span class="grade-num">${dmuGrade.toFixed(1)}등급</span>`;
+      badge.querySelector('.grade-num').style.color=
+        dmuGrade<=2?'var(--gn)':dmuGrade<=4?'var(--ac)':dmuGrade<=6?'var(--or)':'var(--rd)';
+
+      let dmuDetailHtml=dmuBest2.map((s,i)=>`<div class="row"><span>${i+1}순위 학기 [${s.sem}]</span><b>평균 ${s.avg.toFixed(3)}등급 (${s.count}과목, ${s.units}단위)</b></div>`).join('');
+      if(dmuSemAvgs.length>2){
+        dmuDetailHtml+=dmuSemAvgs.slice(2).map(s=>`<div class="row" style="color:var(--t3)"><span>미반영 [${s.sem}]</span><span>${s.avg.toFixed(3)}등급</span></div>`).join('');
+      }
+      dmuDetailHtml+=`
+        <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+          <span>우수 2개 학기 평균등급</span><b>${dmuGrade.toFixed(3)}</b>
+        </div>
+        <div class="row"><span>교과점수 (90%)</span><b>${dmuGyogwaClamped.toFixed(1)}점</b> / 900점</div>
+        <div class="row"><span>출결 (10%, 만점 가정)</span><b>${dmuAttend}점</b> / 100점</div>
+        <div class="row total-row"><span>학생부 총점</span><b>${dmuTotal.toFixed(1)} / 1,000점</b></div>
+        <div class="row" style="color:var(--t3)">※ 석차등급(1~9) 과목만 반영, 성취도(A/B/C) 과목 제외</div>
+        <div class="row" style="color:var(--t3)">※ 석차등급 3과목 이상 학기만 반영 대상</div>
+        <div class="row" style="color:var(--t3)">※ 전 학년 중 우수 2개 학기 전과목 반영 (3-1까지)</div>`;
+
+      detailEl.innerHTML=dmuDetailHtml;
+      continue;
+    }
+
+    // ── 국립경국대학교 산출 ──
+    // 공식: 
+    //   1) 반영 교과목 선정 - 공통/일반선택 12과목 (국·수·영 상위 7과목 + 사회·과학·한국사 상위 2과목) + 진로선택 상위 3과목
+    //   2) 석차등급 환산점수표(1→1.000, 2→0.875, 3→0.8125, 4→0.750, 5→0.6875, 6→0.625, 7→0.500, 8→0.250, 9→0.000)
+    //   3) A값 = Σ(환산점수×이수단위)/Σ이수단위
+    //   4) 교과성적 = 기본점수(560) + 실질반영점수(240) × A값
+    //   5) 출결 만점 가정(200) → 총점 = 교과 + 출결 (1,000점 만점)
+    //   6) 진로선택: 성취도 A→1등급(1.000), B→2등급(0.875), C→3등급(0.8125)로 환산
+    //   7) 실기/체육특기자 전형은 비율에 따라 스케일 조정
+    if(u.scoring==='gknu_1000'||u.scoring==='gknu_music'||u.scoring==='gknu_art'||u.scoring==='gknu_pe'||u.scoring==='gknu_sports'){
+      // 국립경국대 석차등급 → 환산점수표 (1.000 ~ 0.000)
+      const GKNU_CONV = {1:1.000, 2:0.875, 3:0.8125, 4:0.750, 5:0.6875, 6:0.625, 7:0.500, 8:0.250, 9:0.000};
+      
+      // 교과별로 그룹핑 (3학년 2학기 제외 - 반영학기: 1·2학년 전학기 + 3-1)
+      const gknuGrades = {국어:[], 수학:[], 영어:[], 사회:[], 과학:[], 한국사:[], 진로선택:[]};
+      for(const r of MY_GRADES){
+        const v=parseGradeValue(r.grade);
+        if(v===null) continue;
+        if(r.sem==='3-2') continue; // 3-2 제외
+        
+        const raw=r.grade.trim().toUpperCase();
+        const isABC=(JINRO_MAP[raw]!==undefined);
+        // 등급 → 9단계 등급으로 변환 (1~9 정수)
+        let gradeInt;
+        if(isABC){
+          // A→1, B→2, C→3 (진로선택)
+          gradeInt = raw==='A'?1 : raw==='B'?2 : 3;
+        } else {
+          gradeInt = Math.round(v); // 1~9 정수 등급
+        }
+        gradeInt = Math.max(1, Math.min(9, gradeInt));
+        
+        const conv = GKNU_CONV[gradeInt];
+        const unit = r.unit || 1;
+        
+        // 진로선택은 별도 풀 (성취도 A/B/C이거나 카테고리가 진로선택인 경우)
+        // 요강 p13, p55: "모든 과목 중 상위 3개 과목" — 체육·예술 포함 전 교과 진로선택 허용
+        if(isABC || r.cat==='진로선택'){
+          gknuGrades['진로선택'].push({grade:gradeInt, conv, unit, name:r.name, cat:r.cat, sem:r.sem});
+        } else if(gknuGrades[r.cat]){
+          gknuGrades[r.cat].push({grade:gradeInt, conv, unit, name:r.name, cat:r.cat, sem:r.sem});
+        }
+        // '기타', '체육' 카테고리는 반영하지 않음 (국립경국대는 국·수·영·사·과·한국사+진로선택만 반영)
+      }
+      
+      // 국·수·영 통합 풀에서 상위 7과목 (환산점수 높은 순 = 등급 낮은 순)
+      const kmePool = [...gknuGrades['국어'], ...gknuGrades['수학'], ...gknuGrades['영어']];
+      kmePool.sort((a,b)=>b.conv-a.conv);
+      const top7KME = kmePool.slice(0, 7);
+      
+      // 사회·과학·한국사 통합 풀에서 상위 2과목
+      const ssPool = [...gknuGrades['사회'], ...gknuGrades['과학'], ...gknuGrades['한국사']];
+      ssPool.sort((a,b)=>b.conv-a.conv);
+      const top2SS = ssPool.slice(0, 2);
+      
+      // 진로선택 상위 3과목
+      gknuGrades['진로선택'].sort((a,b)=>b.conv-a.conv);
+      const top3Jinro = gknuGrades['진로선택'].slice(0, 3);
+      
+      // 전체 반영과목 (최대 12과목)
+      const allReflected = [...top7KME, ...top2SS, ...top3Jinro];
+      
+      if(allReflected.length===0){
+        badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num" style="color:var(--t3)">-</span>';
+        detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">반영 교과 등급이 입력되지 않았습니다.</div>';
+        continue;
+      }
+      
+      // A값 = Σ(환산점수 × 이수단위) / Σ이수단위
+      const sumConvU = allReflected.reduce((s,x)=>s+x.conv*x.unit, 0);
+      const sumU = allReflected.reduce((s,x)=>s+x.unit, 0);
+      const Avalue = sumConvU / sumU;
+      
+      // 교과성적 = 기본점수 + 실질반영점수 × A값 (전형별 다름)
+      // 출결 만점 가정
+      let gknuGyogwa, gknuGyogwaMax, gknuChulgyul, gknuChulgyulMax, gknuExtraNote='';
+      let gknuTotal, gknuMax;
+      
+      if(u.scoring==='gknu_1000'){
+        // 학생부교과 전형: 교과 800(560+240) + 출결 200(140+60) = 1,000
+        gknuGyogwa = 560 + 240*Avalue;
+        gknuGyogwaMax = 800;
+        gknuChulgyul = 200; // 만점 가정
+        gknuChulgyulMax = 200;
+        gknuTotal = gknuGyogwa + gknuChulgyul;
+        gknuMax = 1000;
+      } else if(u.scoring==='gknu_music'||u.scoring==='gknu_art'){
+        // 실기전형(음악/미술): 학생부 20%(교과112+48+출결28+12=200점), 실기 800점 별도
+        gknuGyogwa = 112 + 48*Avalue;
+        gknuGyogwaMax = 160;
+        gknuChulgyul = 40; // 28+12 만점
+        gknuChulgyulMax = 40;
+        gknuTotal = gknuGyogwa + gknuChulgyul;
+        gknuMax = 200;
+        gknuExtraNote = '<div class="row" style="color:var(--or)">※ 실기 800점 별도 (총 1,000점 만점)</div>';
+      } else if(u.scoring==='gknu_pe'){
+        // 실기전형(체육): 학생부 40%(교과224+96+출결56+24=400점), 실기 600점 별도
+        gknuGyogwa = 224 + 96*Avalue;
+        gknuGyogwaMax = 320;
+        gknuChulgyul = 80; // 56+24 만점
+        gknuChulgyulMax = 80;
+        gknuTotal = gknuGyogwa + gknuChulgyul;
+        gknuMax = 400;
+        gknuExtraNote = '<div class="row" style="color:var(--or)">※ 실기 600점 별도 (총 1,000점 만점)</div>';
+      } else { // gknu_sports
+        // 체육특기자: 학생부 30%(교과168+72+출결42+18=300점), 실적 700점 별도
+        gknuGyogwa = 168 + 72*Avalue;
+        gknuGyogwaMax = 240;
+        gknuChulgyul = 60; // 42+18 만점
+        gknuChulgyulMax = 60;
+        gknuTotal = gknuGyogwa + gknuChulgyul;
+        gknuMax = 300;
+        gknuExtraNote = '<div class="row" style="color:var(--or)">※ 경기실적 700점 별도 (총 1,000점 만점)</div>';
+      }
+      
+      // 평균등급 표시용 (이수단위 가중 평균)
+      const displayGrade = allReflected.reduce((s,x)=>s+x.grade*x.unit, 0) / sumU;
+      
+      // 배지 표시
+      badge.innerHTML=`<span class="grade-label">${gknuTotal.toFixed(1)}/${gknuMax}점</span><span class="grade-num">${displayGrade.toFixed(1)}등급</span>`;
+      badge.querySelector('.grade-num').style.color=
+        displayGrade<=2?'var(--gn)':displayGrade<=4?'var(--ac)':displayGrade<=6?'var(--or)':'var(--rd)';
+      
+      // 상세 표시
+      let gknuDetailHtml='';
+      
+      // 교과별 반영 과목
+      if(top7KME.length>0){
+        const kmeAvgGrade = top7KME.reduce((s,x)=>s+x.grade*x.unit,0)/top7KME.reduce((s,x)=>s+x.unit,0);
+        const kmeUnits = top7KME.reduce((s,x)=>s+x.unit,0);
+        gknuDetailHtml+=`<div class="row"><span>국·수·영 상위 ${top7KME.length}과목</span><b>평균 ${kmeAvgGrade.toFixed(2)}등급 (${kmeUnits}단위)</b></div>`;
+      } else {
+        gknuDetailHtml+=`<div class="row" style="color:var(--t3)"><span>국·수·영</span><span>입력 없음</span></div>`;
+      }
+      
+      if(top2SS.length>0){
+        const ssAvgGrade = top2SS.reduce((s,x)=>s+x.grade*x.unit,0)/top2SS.reduce((s,x)=>s+x.unit,0);
+        const ssUnits = top2SS.reduce((s,x)=>s+x.unit,0);
+        gknuDetailHtml+=`<div class="row"><span>사회·과학·한국사 상위 ${top2SS.length}과목</span><b>평균 ${ssAvgGrade.toFixed(2)}등급 (${ssUnits}단위)</b></div>`;
+      } else {
+        gknuDetailHtml+=`<div class="row" style="color:var(--t3)"><span>사회·과학·한국사</span><span>입력 없음</span></div>`;
+      }
+      
+      if(top3Jinro.length>0){
+        const jinroAvgGrade = top3Jinro.reduce((s,x)=>s+x.grade*x.unit,0)/top3Jinro.reduce((s,x)=>s+x.unit,0);
+        const jinroUnits = top3Jinro.reduce((s,x)=>s+x.unit,0);
+        gknuDetailHtml+=`<div class="row"><span>진로선택 상위 ${top3Jinro.length}과목</span><b>평균 ${jinroAvgGrade.toFixed(2)}등급 (${jinroUnits}단위)</b></div>`;
+      } else {
+        gknuDetailHtml+=`<div class="row" style="color:var(--t3)"><span>진로선택</span><span>입력 없음</span></div>`;
+      }
+      
+      gknuDetailHtml+=`
+        <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+          <span>총 반영과목</span><b>${allReflected.length}과목 / 12과목 (이수단위 ${sumU})</b>
+        </div>
+        <div class="row"><span>A값 (환산점수 가중평균)</span><b>${Avalue.toFixed(4)}</b></div>
+        <div class="row"><span>교과성적</span><b>${gknuGyogwa.toFixed(1)}점</b> / ${gknuGyogwaMax}점 <span style="color:var(--t3)">(= 기본+실질×A값)</span></div>
+        <div class="row"><span>출결 (만점 가정)</span><b>${gknuChulgyul}점</b> / ${gknuChulgyulMax}점</div>
+        <div class="row total-row"><span>학생부 총점</span><b>${gknuTotal.toFixed(1)} / ${gknuMax}점</b></div>
+        ${gknuExtraNote}
+        <div class="row" style="color:var(--t3)">※ 진로선택 성취도 환산: A→1등급, B→2등급, C→3등급</div>
+        <div class="row" style="color:var(--t3)">※ 반영학기: 1·2학년 전학기 + 3-1 (총 5개 학기)</div>
+        <div class="row" style="color:var(--t3)">※ 간호학부·수학교육과는 수능최저학력기준 별도 적용</div>`;
+      
+      detailEl.innerHTML=gknuDetailHtml;
+      continue;
+    }
+
+    // ── 수원과학대학교 산출 (최우수 1학기 전과목 이수단위가중 평균등급 → 등급표 환산) ──
+    if(u.scoring==='suwon_1000'||u.scoring==='suwon_400'||u.scoring==='suwon_200'){
+      // 학기별 이수단위 가중 평균등급 (석차등급 1~9 과목만, A/B/C 제외)
+      const sscSemData={};
+      for(const r of MY_GRADES){
+        const v=parseGradeValue(r.grade);
+        if(v===null) continue;
+        const raw=r.grade.trim().toUpperCase();
+        const isABC=(JINRO_MAP[raw]!==undefined);
+        if(isABC) continue;
+        // 1~2학년만 (3학년 제외)
+        if(r.sem.startsWith('3')) continue;
+        if(!sscSemData[r.sem]) sscSemData[r.sem]={sumGU:0, sumU:0, count:0};
+        const unit=r.unit||1;
+        sscSemData[r.sem].sumGU+=v*unit;
+        sscSemData[r.sem].sumU+=unit;
+        sscSemData[r.sem].count++;
+      }
+
+      const sscSemAvgs=[];
+      for(const [sem,d] of Object.entries(sscSemData)){
+        if(d.sumU>0) sscSemAvgs.push({sem, avg:d.sumGU/d.sumU, count:d.count, units:d.sumU});
+      }
+
+      if(sscSemAvgs.length===0){
+        badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num" style="color:var(--t3)">-</span>';
+        detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">반영 학기 등급이 입력되지 않았습니다.</div>';
+        continue;
+      }
+
+      // 최우수 1학기 (평균등급 낮을수록 좋음)
+      sscSemAvgs.sort((a,b)=>a.avg-b.avg);
+      const sscBest=sscSemAvgs[0];
+      const sscGrade=sscBest.avg;
+
+      // 등급표 환산 (등급 구간별 점수 - 1000점 만점 기준)
+      // 평균등급은 소수점이므로 구간 내 선형보간 적용
+      const SSC_TABLE=[
+        {min:1.0, max:1.99999, score1000:1000.00, score400:400.00, score200:200.00},
+        {min:2.0, max:2.99999, score1000:972.50,  score400:389.00, score200:194.50},
+        {min:3.0, max:3.99999, score1000:945.00,  score400:378.00, score200:189.00},
+        {min:4.0, max:4.99999, score1000:917.50,  score400:367.00, score200:183.50},
+        {min:5.0, max:5.99999, score1000:890.00,  score400:356.00, score200:178.00},
+        {min:6.0, max:6.99999, score1000:862.50,  score400:345.00, score200:172.00},
+        {min:7.0, max:7.99999, score1000:835.00,  score400:334.00, score200:167.00},
+        {min:8.0, max:8.99999, score1000:807.50,  score400:323.00, score200:161.50},
+        {min:9.0, max:9.00000, score1000:780.00,  score400:312.00, score200:156.00}
+      ];
+
+      let maxPt, scoreKey;
+      if(u.scoring==='suwon_1000'){maxPt=1000; scoreKey='score1000';}
+      else if(u.scoring==='suwon_400'){maxPt=400; scoreKey='score400';}
+      else{maxPt=200; scoreKey='score200';}
+
+      // 등급 구간 찾기
+      let sscScore=SSC_TABLE[SSC_TABLE.length-1][scoreKey]; // 기본 최저
+      for(const row of SSC_TABLE){
+        if(sscGrade>=row.min && sscGrade<=row.max){
+          sscScore=row[scoreKey];
+          break;
+        }
+      }
+
+      // 배지 표시
+      badge.innerHTML=`<span class="grade-label">${sscScore.toFixed(1)}/${maxPt}점</span><span class="grade-num">${sscGrade.toFixed(1)}등급</span>`;
+      badge.querySelector('.grade-num').style.color=
+        sscGrade<=2?'var(--gn)':sscGrade<=4?'var(--ac)':sscGrade<=6?'var(--or)':'var(--rd)';
+
+      // 상세
+      let sscDetailHtml=`<div class="row"><span>최우수 학기 [${sscBest.sem}]</span><b>평균 ${sscGrade.toFixed(3)}등급 (${sscBest.count}과목, ${sscBest.units}단위)</b></div>`;
+      if(sscSemAvgs.length>1){
+        sscDetailHtml+=sscSemAvgs.slice(1).map(s=>`<div class="row" style="color:var(--t3)"><span>미반영 [${s.sem}]</span><span>${s.avg.toFixed(3)}등급</span></div>`).join('');
+      }
+
+      // 등급 구간 표시
+      const sscFloorGrade=Math.floor(sscGrade);
+      const sscGradeLabel=sscFloorGrade>=9?'9등급':`${sscFloorGrade}등급 구간`;
+
+      sscDetailHtml+=`
+        <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+          <span>최우수 1학기 평균등급</span><b>${sscGrade.toFixed(5)}</b>
+        </div>
+        <div class="row"><span>등급 구간</span><b>${sscGradeLabel} (${sscFloorGrade}.0~${sscFloorGrade}.99999)</b></div>
+        <div class="row"><span>내신 성적반영 점수</span><b>${sscScore.toFixed(1)}점</b> / ${maxPt}점</div>`;
+
+      if(u.scoring==='suwon_400') sscDetailHtml+=`<div class="row" style="color:var(--or)">※ 면접 600점 별도 (총 1,000점 만점)</div>`;
+      if(u.scoring==='suwon_200') sscDetailHtml+=`<div class="row" style="color:var(--or)">※ 실기 800점 별도 (총 1,000점 만점)</div>`;
+      sscDetailHtml+=`<div class="row" style="color:var(--t3)">※ 석차등급(1~9) 과목만 반영, 성취도(A/B/C) 과목 제외</div>`;
+      sscDetailHtml+=`<div class="row" style="color:var(--t3)">※ 1~2학년 중 최우수 1학기 전과목 100% 반영</div>`;
+
+      detailEl.innerHTML=sscDetailHtml;
+      continue;
+    }
+
+    // ── 연성대 산출 (우수 2개 학기 전과목 이수단위가중 평균등급) ──
+    if(u.scoring==='yeonsung_1000'||u.scoring==='yeonsung_400'){
+      const semAvgs=getSemesterAverages().filter(s=>s.sem!=='3-2');
+      if(semAvgs.length===0){
+        badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num" style="color:var(--t3)">-</span>';
+        detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">반영 학기 등급이 입력되지 않았습니다.</div>';
+        continue;
+      }
+      // 우수 2개 학기 (평균등급 낮을수록 좋음)
+      semAvgs.sort((a,b)=>a.avg-b.avg);
+      const best2=semAvgs.slice(0,2);
+      const ysGrade=best2.reduce((s,x)=>s+x.avg,0)/best2.length;
+
+      const maxPt=(u.scoring==='yeonsung_1000')?1000:400;
+      let ysScore;
+      if(maxPt===1000) ysScore=(9-ysGrade)*50+600;
+      else ysScore=(9-ysGrade)*20+240;
+
+      const ysPct=(ysScore/maxPt)*100;
+      const ysResultGrade=percentToGrade(ysPct);
+
+      const displayScore=`${ysScore.toFixed(1)}/${maxPt}점`;
+
+      let semDetailHtml=best2.map((s,i)=>`<div class="row"><span>${i+1}순위 학기 [${s.sem}]</span><b>평균 ${s.avg.toFixed(2)}등급 (${s.count}과목)</b></div>`).join('');
+      if(semAvgs.length>2){
+        semDetailHtml+=semAvgs.slice(2).map(s=>`<div class="row" style="color:var(--t3)"><span>미반영 [${s.sem}]</span><span>${s.avg.toFixed(2)}등급</span></div>`).join('');
+      }
+
+      const extraHtml=`
+        <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+          <span>학생부 등급 (우수2학기 평균)</span><b>${ysGrade.toFixed(3)}</b>
+        </div>
+        <div class="row"><span>학생부성적 (${maxPt}점 만점)</span><b>${ysScore.toFixed(1)}점</b> <span style="color:var(--t3)">(= (9-${ysGrade.toFixed(3)})×${maxPt===1000?50:20}+${maxPt===1000?600:240})</span></div>
+        ${u.scoring==='yeonsung_400'?'<div class="row" style="color:var(--or)">※ 면접 600점 별도 (총 1,000점 만점)</div>':''}
+        <div class="row" style="color:var(--t3)">※ 출결가산점 미포함 (만점대비 10%)</div>`;
+
+      badge.innerHTML=`<span class="grade-label">${displayScore}</span><span class="grade-num">${ysGrade.toFixed(1)}등급</span>`;
+      badge.querySelector('.grade-num').style.color=
+        ysGrade<=2?'var(--gn)':ysGrade<=4?'var(--ac)':ysGrade<=6?'var(--or)':'var(--rd)';
+
+      detailEl.innerHTML=`${semDetailHtml}${extraHtml}`;
+      continue;
+    }
+
+    // ── 백석대 산출 ──
+    // 공식: 6개 교과(국,수,영,사회(역사/도덕),한국사,과학) 상위 15과목 이수단위가중 석차등급
+    //       [{10 - Σ(이수단위×석차등급)/총이수단위} × 30] + 540 = 교과점수(810점 만점)
+    //       진로과목 상위 3과목: 성취도+학생비율 → 등급변환 → 평균등급 → 환산표(90점 만점)
+    //       출결 100점(만점 가정)
+    //       반영비율에 따라 100%=1000점, 60%=600점, 20%=200점
+    if(u.scoring==='baekseok_100'||u.scoring==='baekseok_60'||u.scoring==='baekseok_20'){
+      // 반영비율 결정
+      let ratio=1.0;
+      if(u.scoring==='baekseok_60') ratio=0.6;
+      if(u.scoring==='baekseok_20') ratio=0.2;
+
+      // 6개 교과에서 석차등급 과목만 수집 (A/B/C 성취도 과목 제외)
+      const bsSubjects=['국어','수학','영어','사회','한국사','과학'];
+      let bsPool=[];
+      for(const cat of bsSubjects){
+        const arr=grades[cat]||[];
+        for(const item of arr){
+          if(item.isABC) continue; // 성취도(A/B/C) 과목은 석차등급 반영에서 제외
+          bsPool.push({grade:item.grade, unit:item.unit, name:item.name, cat:cat});
+        }
+      }
+
+      // 상위 15개 과목 (등급 낮을수록 좋음 → 가중평균등급이 낮은 쪽)
+      // 단순히 등급 오름차순 정렬 후 15개 선택
+      bsPool.sort((a,b)=>a.grade-b.grade);
+      const top15=bsPool.slice(0,15);
+
+      if(top15.length===0){
+        badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num" style="color:var(--t3)">-</span>';
+        detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">반영 교과 등급이 입력되지 않았습니다.</div>';
+        continue;
+      }
+
+      // 부족한 과목은 이수단위 10, 등급 9로 채움
+      let filledCount=0;
+      while(top15.length<15){
+        top15.push({grade:9, unit:10, name:'(미입력)', cat:'-'});
+        filledCount++;
+      }
+
+      const sumGU=top15.reduce((s,x)=>s+x.grade*x.unit,0);
+      const sumU=top15.reduce((s,x)=>s+x.unit,0);
+      const weightedAvg=sumGU/sumU; // 이수단위 가중 평균등급
+      const gyogwaRaw=(10-weightedAvg)*30+540; // 810점 만점
+      const gyogwa=Math.round(gyogwaRaw*100)/100;
+
+      // 진로과목: 전 교과 상위 3개 진로과목
+      // 요강 성취도 변환은 학생비율 기반이나(A=1+A비율/100×2, B=2+B누적비율/100×2, C=4+C누적비율/100×2),
+      // 본 산출기에서는 학생비율 정보가 없으므로 중간값 기반 환산: A=2등급, B=4등급, C=6등급
+      // (A: 1.0~3.0 범위의 중간 / B: 2.0~4.0 범위의 상한 / C: 4.0~6.0 범위의 상한)
+      const BS_JINRO_MAP={'A':2, 'B':4, 'C':6};
+      const bsJinroPool=[];
+      for(const r of MY_GRADES){
+        if(r.cat!=='진로선택') continue;
+        const raw=(r.grade||'').trim().toUpperCase();
+        if(!raw) continue;
+        let gradeForBS;
+        if(BS_JINRO_MAP[raw]!==undefined){
+          gradeForBS = BS_JINRO_MAP[raw];
+        } else {
+          // 숫자 등급(1~9)인 경우 그대로 사용 (드문 케이스)
+          const n=parseInt(raw);
+          if(isNaN(n)||n<1||n>9) continue;
+          gradeForBS = n;
+        }
+        bsJinroPool.push({grade:gradeForBS, name:r.name, raw});
+      }
+      bsJinroPool.sort((a,b)=>a.grade-b.grade);
+      const top3JinroItems=bsJinroPool.slice(0,3);
+      const top3Jinro=top3JinroItems.map(x=>x.grade);
+      // 부족하면 9등급으로 채움
+      let jinroFilled=0;
+      while(top3Jinro.length<3){ top3Jinro.push(9); jinroFilled++; }
+      const jinroAvg=top3Jinro.reduce((s,g)=>s+g,0)/top3Jinro.length;
+
+      // 평균등급 → 점수 환산표 (백석대 요강 7페이지)
+      function bsJinroScore(avg){
+        if(avg<1.5) return 90;
+        if(avg<2) return 85;
+        if(avg<2.5) return 80;
+        if(avg<3) return 75;
+        if(avg<3.5) return 70;
+        if(avg<4) return 65;
+        if(avg<4.5) return 60;
+        if(avg<5) return 55;
+        if(avg<5.5) return 50;
+        if(avg<6) return 45;
+        if(avg<6.5) return 40;
+        if(avg<7) return 35;
+        if(avg<7.5) return 30;
+        if(avg<8) return 25;
+        if(avg<8.5) return 20;
+        if(avg<9) return 15;
+        return 10;
+      }
+      const jinroScore=bsJinroScore(jinroAvg); // 90점 만점
+
+      const chulgyul=100; // 출결 만점 가정
+
+      // 총점 (반영비율 적용 전 교과:비교과 = 90:10)
+      const totalRaw=gyogwa+jinroScore+chulgyul; // 1000점 만점
+      const totalScaled=totalRaw*ratio;
+      const maxPt=1000*ratio;
+
+      const bsPct=(totalRaw/1000)*100;
+
+      // 평균등급 표시
+      const displayAvg=weightedAvg;
+
+      badge.innerHTML=`<span class="grade-label">${totalScaled.toFixed(1)}/${maxPt.toFixed(0)}점</span><span class="grade-num">${displayAvg.toFixed(1)}등급</span>`;
+      badge.querySelector('.grade-num').style.color=
+        displayAvg<=2?'var(--gn)':displayAvg<=4?'var(--ac)':displayAvg<=6?'var(--or)':'var(--rd)';
+
+      // 상세
+      let bsDetailHtml='';
+
+      // 교과별 상위 과목 표시
+      const catCount={};
+      top15.forEach(x=>{
+        if(!catCount[x.cat]) catCount[x.cat]={count:0,sumG:0};
+        catCount[x.cat].count++;
+        catCount[x.cat].sumG+=x.grade;
+      });
+      bsDetailHtml+=Object.entries(catCount).map(([cat,d])=>{
+        if(cat==='-') return `<div class="row" style="color:var(--t3)"><span>미입력 보충</span><span>${d.count}과목 (9등급)</span></div>`;
+        return `<div class="row"><span>${cat}</span><b>${d.count}과목, 평균 ${(d.sumG/d.count).toFixed(1)}등급</b></div>`;
+      }).join('');
+
+      // 진로과목 상세 표시
+      const jinroDetailParts=top3JinroItems.map(x=>`${x.raw}(${x.name||'-'})`);
+      for(let i=0; i<jinroFilled; i++) jinroDetailParts.push('<span style="color:var(--rd)">9등급[보충]</span>');
+      const jinroDetailStr=jinroDetailParts.join(', ');
+
+      bsDetailHtml+=`
+        <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+          <span>이수단위 가중 평균등급</span><b>${weightedAvg.toFixed(3)}</b>
+        </div>
+        <div class="row"><span>교과점수 (상위 15과목)</span><b>${gyogwa.toFixed(1)}점</b> / 810점 <span style="color:var(--t3)">(= (10-${weightedAvg.toFixed(3)})×30+540)</span></div>
+        <div class="row"><span>진로과목 상위 3개</span><span style="font-size:.7rem">${jinroDetailStr}</span></div>
+        <div class="row" style="padding-left:1rem"><span style="color:var(--t3)">└ 평균등급 ${jinroAvg.toFixed(2)} (A=2·B=4·C=6 환산)</span><b>${jinroScore}점 / 90점</b></div>
+        <div class="row"><span>출결 (만점 가정)</span><b>${chulgyul}점</b> / 100점</div>
+        <div class="row total-row"><span>학생부 총점${ratio<1?' (반영비율 '+Math.round(ratio*100)+'%)':''}</span><b>${totalScaled.toFixed(1)} / ${maxPt.toFixed(0)}점</b></div>`;
+      if(filledCount>0) bsDetailHtml+=`<div class="row" style="color:var(--or)">※ 반영과목 15개 미만 → ${filledCount}과목을 이수단위10·9등급으로 보충</div>`;
+      if(jinroFilled>0) bsDetailHtml+=`<div class="row" style="color:var(--or)">※ 진로과목 3개 미만 → ${jinroFilled}과목을 9등급으로 보충</div>`;
+      if(u.scoring==='baekseok_60') bsDetailHtml+=`<div class="row" style="color:var(--or)">※ 면접 400점 별도 (총 1,000점 만점)</div>`;
+      if(u.scoring==='baekseok_20') bsDetailHtml+=`<div class="row" style="color:var(--or)">※ 실기 800점 별도 (총 1,000점 만점)</div>`;
+
+      detailEl.innerHTML=bsDetailHtml;
+      continue;
+    }
+
+    // ── 대전대학교 산출 ──
+    // 공식 (모집요강 P.44~46):
+    //   교과성적 산출:
+    //   A) 교과중점/군사학과/고른기회/농어촌/기회균형/실기위주 (일반학과, 8과목 방식):
+    //      - 국/영/수/사회·과학 각 교과군별 이수단위 2 이상 과목 중 석차등급 우수 2과목씩 총 8과목 선택
+    //      - 각 교과군 성적 = Σ(이수단위×석차등급)/Σ이수단위 × 0.25 (교과군별 25%)
+    //      - 교과성적 = 교과성적만점 - {(교과군별 성적 합 - 1) × 10}
+    //   B) 교과면접/지역인재Ⅰ·Ⅱ (일반학과, 6+진로가산 방식):
+    //      - 국/영/수/사회·과학에서 최우수 6과목 선택 (과목당 최대 2과목 선택 가능)
+    //      - 과목 석차등급을 활용하여 교과별 성적 산출
+    //      - 교과성적 = 만점 - [(선택 6과목 성적합/6 - 1) × 10]
+    //      - 진로선택 최우수 2과목 가산점 별도 (등급 1.00~2.99:9, 3.00~5.99:7, 6.00~9.00:5 또는 A:9, B:7, C:5)
+    //   
+    //   전형별 총점 만점:
+    //   - dju_basic (교과중점 등): 교과 900 + 출결 100 = 1,000점
+    //   - dju_interview (교과면접): 교과 540 + 출결 60 = 600점 (학생부 60%), 면접 400점 별도 → 총 1,000점
+    //   - dju_region (지역인재): 교과 900 + 출결 100 = 1,000점
+    //   - dju_military (군사학과 1단계): 교과 630 + 출결 70 = 700점 (학생부 70%), 2단계 면접/체력 별도 → 총 1,000점
+    //   - dju_sports (실기위주 스포츠): 교과 360 + 출결 40 = 400점 (학생부 40%), 실기 600점 별도 → 총 1,000점
+    if(u.scoring==='dju_basic'||u.scoring==='dju_interview'||u.scoring==='dju_region'||u.scoring==='dju_military'||u.scoring==='dju_sports'){
+      // 전형별 교과 만점 및 총점 설정
+      let djuGyogwaMax, djuChulMax, djuTotalMax, djuExtraNote='';
+      if(u.scoring==='dju_basic'){
+        djuGyogwaMax=900; djuChulMax=100; djuTotalMax=1000;
+      } else if(u.scoring==='dju_interview'){
+        djuGyogwaMax=540; djuChulMax=60; djuTotalMax=600;
+        djuExtraNote='<div class="row" style="color:var(--or)">※ 면접 400점 별도 (총 1,000점 만점)</div>';
+      } else if(u.scoring==='dju_region'){
+        djuGyogwaMax=900; djuChulMax=100; djuTotalMax=1000;
+      } else if(u.scoring==='dju_military'){
+        djuGyogwaMax=630; djuChulMax=70; djuTotalMax=700;
+        djuExtraNote='<div class="row" style="color:var(--or)">※ 2단계: 면접 200점 + 체력검정 100점 별도 (총 1,000점 만점)</div><div class="row" style="color:var(--or)">※ 수능최저: 국/수/영 중 1개 5등급 이내</div>';
+      } else { // dju_sports
+        djuGyogwaMax=360; djuChulMax=40; djuTotalMax=400;
+        djuExtraNote='<div class="row" style="color:var(--or)">※ 실기 600점 별도 (총 1,000점 만점)</div>';
+      }
+
+      // 방식 A (8과목 방식): dju_basic, dju_military, dju_sports
+      // 방식 B (6과목+진로가산): dju_interview, dju_region
+      const isMethodB = (u.scoring==='dju_interview' || u.scoring==='dju_region');
+
+      let djuGyogwa=0, djuDetailInner='';
+
+      if(isMethodB){
+        // ── 방식 B: 국/영/수/사회·과학 최우수 6과목 (과목당 최대 2과목) + 진로선택 2과목 가산점 ──
+        // 1) 각 교과별 등급 수집 (이수단위 2 이상, A/B/C 성취도 과목 제외)
+        const djuKor=(grades['국어']||[]).filter(x=>!x.isABC && x.unit>=2).map(x=>x.grade).sort((a,b)=>a-b);
+        const djuEng=(grades['영어']||[]).filter(x=>!x.isABC && x.unit>=2).map(x=>x.grade).sort((a,b)=>a-b);
+        const djuMath=(grades['수학']||[]).filter(x=>!x.isABC && x.unit>=2).map(x=>x.grade).sort((a,b)=>a-b);
+        // 사회+과학 통합 교과군 (한국사 포함)
+        const djuSocSci=[
+          ...(grades['사회']||[]).filter(x=>!x.isABC && x.unit>=2),
+          ...(grades['과학']||[]).filter(x=>!x.isABC && x.unit>=2),
+          ...(grades['한국사']||[]).filter(x=>!x.isABC && x.unit>=2)
+        ].map(x=>x.grade).sort((a,b)=>a-b);
+
+        // 2) 각 교과군에서 최대 2과목까지, 전체 풀에서 최우수 6과목 선택
+        const djuPool=[];
+        djuKor.slice(0,2).forEach(g=>djuPool.push({cat:'국어',grade:g}));
+        djuEng.slice(0,2).forEach(g=>djuPool.push({cat:'영어',grade:g}));
+        djuMath.slice(0,2).forEach(g=>djuPool.push({cat:'수학',grade:g}));
+        djuSocSci.slice(0,2).forEach(g=>djuPool.push({cat:'사회·과학',grade:g}));
+
+        djuPool.sort((a,b)=>a.grade-b.grade);
+        const djuTop6=djuPool.slice(0,6);
+
+        // 부족하면 9등급으로 보충
+        let djuFilled=0;
+        while(djuTop6.length<6){
+          djuTop6.push({cat:'(미입력)',grade:9});
+          djuFilled++;
+        }
+
+        if(djuPool.length===0){
+          badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num" style="color:var(--t3)">-</span>';
+          detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">반영 교과 등급이 입력되지 않았습니다. (이수단위 2 이상 과목 필요)</div>';
+          continue;
+        }
+
+        // 3) 각 선택 교과 성적의 합 → 교과성적 만점 - [(합/6 - 1) × 10]
+        //    (실제 점수는 아래 진로 가산점 처리 후 최종 계산 — 요강 p45)
+        const djuSumGrade=djuTop6.reduce((s,x)=>s+x.grade,0);
+        const djuAvgGrade=djuSumGrade/6;
+
+        // 4) 진로선택 가산점 (최우수 2과목)
+        // - 교과면접/지역인재Ⅰ·Ⅱ에 해당 (한의예과 제외, 모집요강 P.44)
+        // - 반영 범위: 국어·영어·수학·사회·과학 내 진로선택만 (요강 p44 ①)
+        // - 변환점수: 석차등급 1.00~2.99→9, 3.00~5.99→7, 6.00~9.00→5 (성취도 A→9, B→7, C→5)
+        // - 이수단위 가중평균: Σ(이수단위×변환점수) / Σ이수단위
+        // - 2과목 산출 불가 시 가산점 적용 불가
+        // - 합산점수는 학생부성적 총점 초과 불가
+        function djuJinroConv(g){
+          if(g<=2.99) return 9;
+          if(g<=5.99) return 7;
+          return 5;
+        }
+        // 대전대 진로 반영 범위: 국·영·수·사·과 키워드가 과목명에 있는 진로선택만
+        const DJU_JINRO_KEYWORDS = /(국어|문학|독서|작문|화법|언어|매체|고전|실용|심화국어|영어|English|회화|독해|영미|수학|미적분|기하|확률|통계|경제수학|수학과제|사회|역사|지리|경제|정치|법|윤리|세계사|한국사|사회문제|여행지리|고전과윤리|정치와법|과학|물리|화학|생명|지구|천문|생태|융합과학|과학사|생활과학)/i;
+        const djuJinroPool=[];
+        for(const r of MY_GRADES){
+          if(r.cat!=='진로선택') continue;
+          // 반영교과(국·영·수·사·과) 내 진로선택만 포함
+          if(!DJU_JINRO_KEYWORDS.test(r.name||'')) continue;
+          const v=parseGradeValue(r.grade);
+          if(v===null) continue;
+          const raw=r.grade.trim().toUpperCase();
+          const isABC=(JINRO_MAP[raw]!==undefined);
+          djuJinroPool.push({conv:djuJinroConv(v), grade:v, unit:r.unit||1, name:r.name, isABC});
+        }
+        djuJinroPool.sort((a,b)=>b.conv-a.conv);
+        const djuJinroTop2=djuJinroPool.slice(0,2);
+
+        let djuJinroScore=0, djuJinroNote='';
+        if(djuJinroTop2.length>=2){
+          // 이수단위 가중평균
+          const sumCU=djuJinroTop2.reduce((s,x)=>s+x.conv*x.unit,0);
+          const sumU=djuJinroTop2.reduce((s,x)=>s+x.unit,0);
+          djuJinroScore=sumCU/sumU;
+          const jinroDetail=djuJinroTop2.map(x=>{
+            const label=x.isABC ? (x.grade===1?'A':x.grade===5?'B':'C') : `${x.grade}등급`;
+            return `${x.name||'-'}(${label}→${x.conv}점)`;
+          }).join(', ');
+          djuJinroNote=`<div class="row"><span>진로선택 상위 2과목</span><span style="font-size:.7rem">${jinroDetail}</span></div>
+            <div class="row" style="padding-left:1rem"><span style="color:var(--t3)">└ 이수단위 가중평균 가산점</span><b>+${djuJinroScore.toFixed(2)}점</b></div>`;
+        } else {
+          djuJinroNote=`<div class="row" style="color:var(--t3)"><span>진로선택 가산점</span><span>미적용 (반영교과 내 진로선택 2과목 미만)</span></div>`;
+        }
+
+        // 교과성적 = (6과목 산출 점수) + 진로 가산점, 단 학생부성적 총점(교과성적 만점) 초과 불가
+        const djuGyogwaBeforeJinro = djuGyogwaMax - ((djuAvgGrade-1)*10);
+        djuGyogwa = Math.min(djuGyogwaMax, djuGyogwaBeforeJinro + djuJinroScore);
+
+        // 상세 HTML
+        let djuTop6Html=djuTop6.map((x,i)=>{
+          const col=x.cat==='(미입력)'?'var(--t3)':'var(--t)';
+          return `<div class="row" style="color:${col}"><span>${i+1}. ${x.cat}</span><span>${x.grade}등급</span></div>`;
+        }).join('');
+
+        djuDetailInner=`
+          ${djuTop6Html}
+          <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+            <span>선택 6과목 평균등급</span><b>${djuAvgGrade.toFixed(3)}</b>
+          </div>
+          <div class="row"><span>교과성적 (진로가산 전)</span><b>${djuGyogwaBeforeJinro.toFixed(1)}점</b> / ${djuGyogwaMax}점 <span style="color:var(--t3)">(= ${djuGyogwaMax} - (${djuAvgGrade.toFixed(3)}-1)×10)</span></div>
+          ${djuJinroNote}
+          <div class="row"><span>교과성적 (진로가산 후)</span><b>${djuGyogwa.toFixed(1)}점</b> / ${djuGyogwaMax}점</div>`;
+
+        if(djuFilled>0) djuDetailInner+=`<div class="row" style="color:var(--or)">※ 반영과목 6개 미만 → ${djuFilled}과목을 9등급으로 보충</div>`;
+
+      } else {
+        // ── 방식 A: 국/영/수/사회·과학 각 교과군별 상위 2과목 총 8과목 (이수단위 가중) ──
+        // 각 교과군 성적 = Σ(이수단위×석차등급)/Σ이수단위 × 0.25
+        // 교과성적 = 만점 - {(4개 교과군 성적 합 - 1) × 10}
+        
+        function djuGroupScore(catArr){
+          // 해당 카테고리들에서 이수단위 2 이상, A/B/C 성취도 제외, 석차등급 우수 2과목 선택
+          // 석차등급 동일 시 이수단위 높은 과목 우선
+          let pool=[];
+          for(const cat of catArr){
+            for(const item of (grades[cat]||[])){
+              if(item.isABC) continue;
+              if(item.unit<2) continue;
+              pool.push(item);
+            }
+          }
+          // 정렬: 석차등급 오름차순, 동일 시 이수단위 내림차순
+          pool.sort((a,b)=>{
+            if(a.grade!==b.grade) return a.grade-b.grade;
+            return b.unit-a.unit;
+          });
+          const top2=pool.slice(0,2);
+          // 부족 시 이수단위 2, 9등급으로 보충
+          let filled=0;
+          while(top2.length<2){
+            top2.push({grade:9, unit:2, name:'(미입력)'});
+            filled++;
+          }
+          const sumGU=top2.reduce((s,x)=>s+x.grade*x.unit,0);
+          const sumU=top2.reduce((s,x)=>s+x.unit,0);
+          const avg=sumGU/sumU;
+          return {avg, top2, filled, rawAvg:avg};
+        }
+
+        const grpKor=djuGroupScore(['국어']);
+        const grpEng=djuGroupScore(['영어']);
+        const grpMath=djuGroupScore(['수학']);
+        // 사회·과학 교과군 (한국사 포함)
+        const grpSoc=djuGroupScore(['사회','과학','한국사']);
+
+        // 각 교과군 × 0.25
+        const djuSumA=(grpKor.avg+grpEng.avg+grpMath.avg+grpSoc.avg)*0.25;
+        // 교과성적 = 교과성적만점 - {(A-1) × 10}
+        // A의 범위: 1~9 (각 교과군 평균등급 × 0.25의 합 = 전체 평균등급)
+        djuGyogwa=djuGyogwaMax - ((djuSumA-1)*10);
+        djuGyogwa=Math.max(djuGyogwaMax-80, Math.min(djuGyogwaMax, djuGyogwa));
+
+        let totalFilled=grpKor.filled+grpEng.filled+grpMath.filled+grpSoc.filled;
+
+        djuDetailInner=`
+          <div class="row"><span>국어 (${grpKor.top2.filter(x=>x.name!=='(미입력)').length}과목)</span><b>가중평균 ${grpKor.avg.toFixed(2)}등급</b></div>
+          <div class="row"><span>영어 (${grpEng.top2.filter(x=>x.name!=='(미입력)').length}과목)</span><b>가중평균 ${grpEng.avg.toFixed(2)}등급</b></div>
+          <div class="row"><span>수학 (${grpMath.top2.filter(x=>x.name!=='(미입력)').length}과목)</span><b>가중평균 ${grpMath.avg.toFixed(2)}등급</b></div>
+          <div class="row"><span>사회·과학 (${grpSoc.top2.filter(x=>x.name!=='(미입력)').length}과목)</span><b>가중평균 ${grpSoc.avg.toFixed(2)}등급</b></div>
+          <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+            <span>교과군 평균 합 [A] (각 25%)</span><b>${djuSumA.toFixed(3)}</b>
+          </div>
+          <div class="row"><span>교과성적</span><b>${djuGyogwa.toFixed(1)}점</b> / ${djuGyogwaMax}점 <span style="color:var(--t3)">(= ${djuGyogwaMax} - (${djuSumA.toFixed(3)}-1)×10)</span></div>`;
+
+        if(totalFilled>0) djuDetailInner+=`<div class="row" style="color:var(--or)">※ 반영과목 부족 → ${totalFilled}과목을 이수단위2·9등급으로 보충</div>`;
+      }
+
+      // 출결점수 (만점 가정)
+      const djuChul=djuChulMax;
+      const djuTotal=djuGyogwa+djuChul;
+
+      // 평균등급 역산 (표시용)
+      // 점수 비율 → 등급 변환
+      const djuPct=(djuTotal/djuTotalMax)*100;
+
+      // 배지 표시: 교과평균 등급 추정 (전체 점수 기반)
+      // djuGyogwa = djuGyogwaMax - (X - 1) × 10 → X = 1 + (djuGyogwaMax - djuGyogwa)/10
+      const djuDispGrade=1+(djuGyogwaMax-djuGyogwa)/10;
+
+      badge.innerHTML=`<span class="grade-label">${djuTotal.toFixed(1)}/${djuTotalMax}점</span><span class="grade-num">${djuDispGrade.toFixed(1)}등급</span>`;
+      badge.querySelector('.grade-num').style.color=
+        djuDispGrade<=2?'var(--gn)':djuDispGrade<=4?'var(--ac)':djuDispGrade<=6?'var(--or)':'var(--rd)';
+
+      let djuFinalDetail=djuDetailInner;
+      djuFinalDetail+=`
+        <div class="row"><span>출결 (만점 가정)</span><b>${djuChul}점</b> / ${djuChulMax}점</div>
+        <div class="row total-row"><span>학생부 소계</span><b>${djuTotal.toFixed(1)} / ${djuTotalMax}점</b></div>
+        ${djuExtraNote}
+        <div class="row" style="color:var(--t3)">※ 이수단위 2 이상 과목 중 석차등급 우수 과목 선택</div>
+        <div class="row" style="color:var(--t3)">※ 성취도(A/B/C) 일반과목 제외, 사회·과학 교과군은 한국사 포함</div>`;
+
+      detailEl.innerHTML=djuFinalDetail;
+      continue;
+    }
+
+    // ── 중부대학교 산출 ──
+    // 공식 (모집요강 p.58~61):
+    //   1) 반영과목: 국어/영어/수학/사회(한국사 포함)/과학 교과 중 상위 10과목 (3-1학기까지, 진로선택 포함)
+    //   2) 진로선택 성취도 환산: A→2등급, B→4등급, C→6등급
+    //   3) 반영과목 10개 미만: 부족 수만큼 9등급 보충
+    //   4) 평균등급 → 환산표 lookup (전형별 만점 상이)
+    //   5) 수능최저 없음
+    if(u.scoring==='jb_1000'||u.scoring==='jb_700'||u.scoring==='jb_500'||u.scoring==='jb_300'||u.scoring==='jb_200'){
+      // 환산표 (등급구간 → 환산점수)
+      const JB1000=[[1.0,1.99,1000],[2.0,2.19,980],[2.2,2.39,960],[2.4,2.59,940],[2.6,2.79,920],[2.8,2.99,900],[3.0,3.19,880],[3.2,3.39,860],[3.4,3.59,840],[3.6,3.79,820],[3.8,3.99,800],[4.0,4.19,780],[4.2,4.39,760],[4.4,4.59,740],[4.6,4.79,720],[4.8,4.99,700],[5.0,5.19,680],[5.2,5.39,660],[5.4,5.59,640],[5.6,5.79,620],[5.8,5.99,600],[6.0,6.19,580],[6.2,6.39,560],[6.4,6.59,540],[6.6,6.79,520],[6.8,6.99,500],[7.0,7.99,480],[8.0,8.99,460],[9.0,9.0,440]];
+      const JB700=[[1.0,1.99,700],[2.0,2.19,690],[2.2,2.39,680],[2.4,2.59,670],[2.6,2.79,660],[2.8,2.99,650],[3.0,3.19,640],[3.2,3.39,630],[3.4,3.59,620],[3.6,3.79,610],[3.8,3.99,600],[4.0,4.19,590],[4.2,4.39,580],[4.4,4.59,570],[4.6,4.79,560],[4.8,4.99,550],[5.0,5.19,540],[5.2,5.39,530],[5.4,5.59,520],[5.6,5.79,510],[5.8,5.99,500],[6.0,6.19,490],[6.2,6.39,480],[6.4,6.59,470],[6.6,6.79,460],[6.8,6.99,450],[7.0,7.99,440],[8.0,8.99,430],[9.0,9.0,420]];
+      const JB500=[[1.0,1.99,500],[2.0,2.24,490],[2.25,2.49,480],[2.5,2.74,470],[2.75,2.99,460],[3.0,3.24,450],[3.25,3.49,440],[3.5,3.74,430],[3.75,3.99,420],[4.0,4.24,410],[4.25,4.49,400],[4.5,4.74,390],[4.75,4.99,380],[5.0,5.24,370],[5.25,5.49,360],[5.5,5.74,350],[5.75,5.99,340],[6.0,6.24,330],[6.25,6.49,320],[6.5,6.74,310],[6.75,6.99,300],[7.0,7.49,290],[7.5,7.99,280],[8.0,8.49,270],[8.5,8.99,260],[9.0,9.0,250]];
+      const JB300=[[1.0,1.99,300],[2.0,2.19,295],[2.2,2.39,290],[2.4,2.59,285],[2.6,2.79,280],[2.8,2.99,275],[3.0,3.19,270],[3.2,3.39,265],[3.4,3.59,260],[3.6,3.79,255],[3.8,3.99,250],[4.0,4.19,245],[4.2,4.39,240],[4.4,4.59,235],[4.6,4.79,230],[4.8,4.99,225],[5.0,5.19,220],[5.2,5.39,215],[5.4,5.59,210],[5.6,5.79,205],[5.8,5.99,200],[6.0,6.19,195],[6.2,6.39,190],[6.4,6.59,185],[6.6,6.79,180],[6.8,6.99,175],[7.0,7.99,170],[8.0,8.99,165],[9.0,9.0,160]];
+      const JB200=[[1.0,1.99,200],[2.0,2.49,195],[2.5,2.99,190],[3.0,3.49,185],[3.5,3.99,180],[4.0,4.49,175],[4.5,4.99,170],[5.0,5.49,165],[5.5,5.99,160],[6.0,6.49,155],[6.5,6.99,150],[7.0,7.49,145],[7.5,7.99,140],[8.0,8.49,135],[8.5,8.99,130],[9.0,9.0,120]];
+
+      // 전형별 테이블, 만점, 부가 설명 설정
+      let jbTable, jbMax, jbExtraNote='';
+      if(u.scoring==='jb_1000'){ jbTable=JB1000; jbMax=1000; }
+      else if(u.scoring==='jb_700'){ jbTable=JB700; jbMax=700; jbExtraNote='<div class="row" style="color:var(--or)">※ 면접 300점 별도 (총 1,000점 만점)</div>'; }
+      else if(u.scoring==='jb_500'){ jbTable=JB500; jbMax=500; jbExtraNote='<div class="row" style="color:var(--or)">※ 면접 500점 별도 (총 1,000점 만점)</div>'; }
+      else if(u.scoring==='jb_300'){ jbTable=JB300; jbMax=300; jbExtraNote='<div class="row" style="color:var(--or)">※ 실기 700점 별도 (총 1,000점 만점)</div>'; }
+      else { jbTable=JB200; jbMax=200; jbExtraNote='<div class="row" style="color:var(--or)">※ 실적 700점 + 출결 100점 별도 (총 1,000점 만점)</div>'; }
+
+      function jbLookup(avg){
+        for(const [mn,mx,sc] of jbTable){
+          if(avg>=mn && avg<=mx) return sc;
+        }
+        // 9등급 초과나 경계 밖: 최저점
+        if(avg<jbTable[0][0]) return jbTable[0][2];
+        return jbTable[jbTable.length-1][2];
+      }
+
+      // 1) 반영 과목 수집: 국/영/수/사회(한국사 포함)/과학 + 진로선택(성취도 환산)
+      // 진로선택 성취도 A→2, B→4, C→6 (요강 p58)
+      // JINRO_MAP: A→1, B→5, C→8 로 되어 있어서 여기서는 재환산 필요
+      // 그래서 MY_GRADES 원본을 직접 순회
+      //
+      // ※ 중부대 요강 (p58): "국어·외국어(영어)·수학·사회(한국사 포함)·과학 교과 중
+      //   상위 10과목 반영(3-1학기까지, 진로선택과목 포함)"
+      //   → 진로선택도 이 5개 교과에 속하는 것만 포함.
+      //   cat='진로선택'으로 저장된 과목의 원교과 정보가 없으므로 과목명 키워드로 판별.
+      const JB_JINRO_KEYWORDS = /(국어|문학|독서|작문|화법|언어|매체|고전|실용|심화국어|영어|English|회화|독해|영미|수학|미적분|기하|확률|통계|경제수학|수학과제|사회|역사|지리|경제|정치|법|윤리|세계사|한국사|사회문제|여행지리|고전과윤리|정치와법|과학|물리|화학|생명|지구|천문|생태|융합과학|과학사|생활과학)/i;
+      const jbPool=[];
+      for(const r of MY_GRADES){
+        const raw=(r.grade||'').trim().toUpperCase();
+        if(!raw) continue;
+        // 3-2 제외 (3-1학기까지)
+        if(r.sem==='3-2') continue;
+        // 교과군 체크: 국어/영어/수학/사회/과학/한국사/진로선택
+        const isCoreSubject=['국어','영어','수학','사회','과학','한국사'].includes(r.cat);
+        const isJinro=(r.cat==='진로선택');
+        if(!isCoreSubject && !isJinro) continue;
+
+        // 진로선택은 국·외·수·사·과 키워드가 과목명에 있는 경우에만 포함 (엄격 화이트리스트)
+        if(isJinro && !JB_JINRO_KEYWORDS.test(r.name||'')) continue;
+
+        // 중부대 전용 등급 변환
+        let jbGrade;
+        if(['A','B','C'].includes(raw)){
+          // A/B/C는 진로선택에만 허용 (성취도 환산: A→2, B→4, C→6, 요강 p58)
+          // 일반 석차등급 교과(국/영/수/사회/과학/한국사)의 A/B/C는 제외
+          // (예: 과학탐구실험 등 성취평가제 과목은 석차등급이 없어 반영 대상 아님)
+          if(!isJinro) continue;
+          jbGrade = (raw==='A') ? 2 : (raw==='B') ? 4 : 6;
+        } else {
+          // 일반 석차등급
+          const n=parseInt(raw);
+          if(isNaN(n)||n<1||n>9) continue;
+          jbGrade=n;
+        }
+        jbPool.push({grade:jbGrade, unit:r.unit||1, name:r.name, cat:r.cat, sem:r.sem, raw:raw});
+      }
+
+      if(jbPool.length===0){
+        badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num" style="color:var(--t3)">-</span>';
+        detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">반영 교과 등급이 입력되지 않았습니다.</div>';
+        continue;
+      }
+
+      // 2) 상위 10과목 선택 (등급 오름차순)
+      jbPool.sort((a,b)=>a.grade-b.grade);
+      const jbTop10=jbPool.slice(0,10);
+
+      // 3) 부족하면 9등급으로 보충
+      let jbFilled=0;
+      while(jbTop10.length<10){
+        jbTop10.push({grade:9, unit:1, name:'(미입력)', cat:'-', sem:'-', raw:''});
+        jbFilled++;
+      }
+
+      // 4) 평균등급 산출 (단순 평균, 이수단위 가중 아님 - 모집요강에 "상위 10과목"만 명시)
+      // 모집요강 p.58에 "이수단위"라는 말이 없고, 환산표는 평균등급을 기준으로 함
+      // 안전하게 단순 평균으로 처리
+      const jbSumGrade=jbTop10.reduce((s,x)=>s+x.grade,0);
+      const jbAvg=jbSumGrade/10;
+
+      // 5) 환산표 lookup
+      const jbScore=jbLookup(jbAvg);
+
+      // 배지 표시
+      badge.innerHTML=`<span class="grade-label">${jbScore}/${jbMax}점</span><span class="grade-num">${jbAvg.toFixed(2)}등급</span>`;
+      badge.querySelector('.grade-num').style.color=
+        jbAvg<=2?'var(--gn)':jbAvg<=4?'var(--ac)':jbAvg<=6?'var(--or)':'var(--rd)';
+
+      // 교과군별 집계 (표시용)
+      const jbCatCount={};
+      jbTop10.forEach(x=>{
+        if(!jbCatCount[x.cat]) jbCatCount[x.cat]={count:0,sumG:0};
+        jbCatCount[x.cat].count++;
+        jbCatCount[x.cat].sumG+=x.grade;
+      });
+
+      let jbDetailHtml=Object.entries(jbCatCount).map(([cat,d])=>{
+        if(cat==='-') return `<div class="row" style="color:var(--t3)"><span>미입력 보충</span><span>${d.count}과목 (9등급)</span></div>`;
+        return `<div class="row"><span>${cat}</span><b>${d.count}과목, 평균 ${(d.sumG/d.count).toFixed(2)}등급</b></div>`;
+      }).join('');
+
+      jbDetailHtml+=`
+        <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+          <span>상위 10과목 평균등급</span><b>${jbAvg.toFixed(3)}</b>
+        </div>
+        <div class="row"><span>환산표 적용 점수</span><b>${jbScore}점</b> / ${jbMax}점</div>
+        <div class="row total-row"><span>학생부 소계</span><b>${jbScore} / ${jbMax}점</b></div>
+        ${jbExtraNote}`;
+
+      if(jbFilled>0) jbDetailHtml+=`<div class="row" style="color:var(--or)">※ 반영과목 10개 미만 → ${jbFilled}과목을 9등급으로 보충</div>`;
+      jbDetailHtml+=`<div class="row" style="color:var(--t3)">※ 반영교과: 국어·수학·외국어(영어)·사회(한국사 포함)·과학 5개 교과 (3-1까지 전 학년)</div>`;
+      jbDetailHtml+=`<div class="row" style="color:var(--t3)">※ 진로선택은 5개 반영교과 범위 내 과목만 포함 (체육·음악·미술·스포츠·운동 등은 제외)</div>`;
+      jbDetailHtml+=`<div class="row" style="color:var(--t3)">※ 진로선택 성취도 A→2, B→4, C→6 환산</div>`;
+
+      detailEl.innerHTML=jbDetailHtml;
+      continue;
+    }
+
+    // ── 인하공업전문대학 산출 ──
+    // 공식: 전 과목 최우수 1개 학기 100% 반영
+    //       학기별 평균등급(이수단위 가중) 중 가장 낮은(우수한) 학기 선택
+    //       환산식: 학생부점수 = 25 × (9 - 최우수학기등급)  [최대 200점]
+    //       inha_200 : 비면접학과 (학생부 100% = 200점)
+    //       inha_500 : 면접학과   (학생부 200점 + 면접 300점 = 500점, 면접 미반영)
+    //       inha_toeic/inha_suneung : 내신 기준이 아니므로 안내만 표시
+    if(u.scoring==='inha_200'||u.scoring==='inha_500'){
+      const semAvgs=getSemesterAverages().filter(s=>s.sem!=='3-2'); // 3-2는 반영 안함
+      if(semAvgs.length===0){
+        badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num" style="color:var(--t3)">-</span>';
+        detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">반영 학기 등급이 입력되지 않았습니다.</div>';
+        continue;
+      }
+      // 최우수 1개 학기 (평균등급이 가장 낮은 학기)
+      semAvgs.sort((a,b)=>a.avg-b.avg);
+      const best=semAvgs[0];
+      const inhaGrade=best.avg;
+
+      // 학생부 점수: 25 × (9 - 등급), 최대 200점
+      const hakbuScore=25*(9-inhaGrade);
+      const maxPt=(u.scoring==='inha_200')?200:500;
+      const hakbuMax=200;
+
+      const inhaPct=(hakbuScore/hakbuMax)*100;
+
+      const displayScore=(u.scoring==='inha_200')
+        ? `${hakbuScore.toFixed(1)}/200점`
+        : `학생부 ${hakbuScore.toFixed(1)}/200점`;
+
+      // 반영학기 + 미반영학기 표시
+      let inhaSemHtml=`<div class="row"><span>최우수 학기 [${best.sem}]</span><b>평균 ${best.avg.toFixed(3)}등급 (${best.count}과목)</b></div>`;
+      if(semAvgs.length>1){
+        inhaSemHtml+=semAvgs.slice(1).map(s=>`<div class="row" style="color:var(--t3)"><span>미반영 [${s.sem}]</span><span>${s.avg.toFixed(2)}등급</span></div>`).join('');
+      }
+
+      const inhaExtraHtml=`
+        <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+          <span>반영등급 (최우수 1학기)</span><b>${inhaGrade.toFixed(3)}</b>
+        </div>
+        <div class="row"><span>학생부 점수 (200점 만점)</span><b>${hakbuScore.toFixed(1)}점</b> <span style="color:var(--t3)">(= 25 × (9 − ${inhaGrade.toFixed(3)}))</span></div>
+        ${u.scoring==='inha_500'?'<div class="row" style="color:var(--or)">※ 면접 300점 별도 (총 500점 만점)</div>':''}
+        <div class="row" style="color:var(--t3)">※ 출결 가산점 최대 20점 별도 (미인정 결석 0일 기준 20점)</div>
+        <div class="row" style="color:var(--t3)">※ 3-2학기는 반영하지 않음 (수시 기준)</div>`;
+
+      badge.innerHTML=`<span class="grade-label">${displayScore}</span><span class="grade-num">${inhaGrade.toFixed(1)}등급</span>`;
+      badge.querySelector('.grade-num').style.color=
+        inhaGrade<=2?'var(--gn)':inhaGrade<=4?'var(--ac)':inhaGrade<=6?'var(--or)':'var(--rd)';
+
+      detailEl.innerHTML=`${inhaSemHtml}${inhaExtraHtml}`;
+      continue;
+    }
+
+    // 인하공전 특기자(어학)·수능 전형 - 내신으로 산출 불가, 안내만 표시
+    if(u.scoring==='inha_toeic'||u.scoring==='inha_suneung'){
+      const semAvgs=getSemesterAverages().filter(s=>s.sem!=='3-2');
+      let refGradeHtml='';
+      if(semAvgs.length){
+        semAvgs.sort((a,b)=>a.avg-b.avg);
+        const best=semAvgs[0];
+        refGradeHtml=`<div class="row"><span>(참고) 최우수 학기</span><b>[${best.sem}] ${best.avg.toFixed(2)}등급</b></div>`;
+        badge.innerHTML=`<span class="grade-label">내신 외 전형</span><span class="grade-num" style="color:var(--t3)">참고</span>`;
+      } else {
+        badge.innerHTML=`<span class="grade-label">내신 외 전형</span><span class="grade-num" style="color:var(--t3)">-</span>`;
+      }
+
+      if(u.scoring==='inha_toeic'){
+        detailEl.innerHTML=`
+          <div class="row" style="color:var(--or)">이 전형은 <b>어학성적</b>으로만 선발합니다 (내신 미반영).</div>
+          <div class="row"><span>지원자격</span><b>TOEIC 600점 이상</b> 또는 <b>TOEIC Speaking 120점 이상</b></div>
+          <div class="row"><span>환산식</span><b>((어학점수 − 500) ÷ 490) × 200</b> = 200점 만점</div>
+          <div class="row" style="color:var(--t3)">※ TS 190점=TOEIC 970점, TS 180점=950점, TS 170점=925점 등으로 환산</div>
+          <div class="row" style="color:var(--t3)">※ 해당 학과: 항공기계공학과, 항공운항과</div>
+          ${refGradeHtml}`;
+      } else {
+        detailEl.innerHTML=`
+          <div class="row" style="color:var(--or)">이 전형은 <b>수능 성적</b>으로만 선발합니다 (내신 미반영).</div>
+          <div class="row"><span>반영 영역</span><b>국어·수학·탐구(최우수 1과목)</b> 중 <b>우수 2개 영역 백분위</b></div>
+          <div class="row"><span>영어 가산점</span><b>1등급 20점 · 2등급 16점 · 3등급 12점 · 4등급 8점 · 5등급 4점</b></div>
+          <div class="row"><span>만점</span><b>200점 + 영어 가산점 20점 = 최대 220점</b></div>
+          <div class="row" style="color:var(--t3)">※ 항공운항과는 면접 300점 추가 (총 500점)</div>
+          ${refGradeHtml}`;
+      }
+      continue;
+    }
+
+    // ── 한서대학교 산출 (2026 모집요강 기준) ──
+    // 반영교과: 국어2 / 외국어2(제2외국어 포함) / 수학2 / 사회·과학2 / 진로선택2 = 총 10과목
+    // 부족분은 9등급(=2점) 처리. 진로선택은 A=9.5, B=6.5, C=3점.
+    // 면접·실기 없는 전형(basic): 교과점수 = X × 45 (만점 450) + 출결 50 = 500점
+    // 면접 있는 전형(interview): X → [표2] 구간표 대입 (교과 540) + 출결 60 = 600점
+    // 항공운항(unit): 이수단위 가중 {단위가중=5단위이상 1.0, 4단위 0.98, 3단위 0.97, 2단위이하 0.96}
+
+    // 제2외국어 키워드 (외국어 교과에 편성)
+    const SECOND_LANG = /(일본어|중국어|독일어|프랑스어|스페인어|러시아어|아랍어|베트남어|한문)/;
+
+    // 한서대 단위 가중치 (항공운항학과용)
+    function hanseoUnitWeight(unit){
+      if(unit>=5) return 1.00;
+      if(unit===4) return 0.98;
+      if(unit===3) return 0.97;
+      return 0.96; // 2 이하
+    }
+
+    // 한서대 반영용 과목 버킷 수집 (원본 MY_GRADES에서 직접)
+    // - 국어/수학: cat 기준
+    // - 외국어: cat='영어' OR (cat='기타' 이면서 이름이 제2외국어)
+    // - 사회·과학: cat='사회' OR cat='과학' OR cat='한국사'
+    //   (요강: "사회(역사, 도덕 포함), 한국사, 과학" 교과가 사회/과학 영역으로 묶임)
+    // - 진로선택: cat='진로선택' (전 교과)
+    // 각 버킷 내에서 A/B/C 성취도 과목은 석차등급이 없으므로 진로선택 이외는 제외.
+    const bKor=[], bFor=[], bMath=[], bSocSci=[], bJinro=[];
+    for(const r of MY_GRADES){
+      const raw=(r.grade||'').trim().toUpperCase();
+      if(!raw) continue;
+      const v=parseGradeValue(raw);
+      if(v===null) continue;
+      const isABC=(JINRO_MAP[raw]!==undefined);
+      const unit=r.unit||1;
+      const name=r.name||'';
+
+      if(r.cat==='진로선택'){
+        // 진로선택은 A/B/C로만 등급화 (숫자 등급 있으면 그대로 허용)
+        bJinro.push({grade:v, unit, name, isABC, cat:r.cat});
+        continue;
+      }
+      // 일반교과는 석차등급(숫자) 필요. A/B/C 성취도만 있는 과목은 제외.
+      if(isABC) continue;
+
+      if(r.cat==='국어') bKor.push({grade:v, unit, name, isABC:false});
+      else if(r.cat==='영어') bFor.push({grade:v, unit, name, isABC:false});
+      else if(r.cat==='기타' && SECOND_LANG.test(name)) bFor.push({grade:v, unit, name, isABC:false});
+      else if(r.cat==='수학') bMath.push({grade:v, unit, name, isABC:false});
+      else if(r.cat==='사회'||r.cat==='과학'||r.cat==='한국사') bSocSci.push({grade:v, unit, name, isABC:false});
+    }
+
+    // 각 버킷에서 상위 2과목 선택 (등급 오름차순; 동점 시 단위수 높은 과목 우선)
+    function pickTop2(bucket){
+      return [...bucket].sort((a,b)=>{
+        if(a.grade!==b.grade) return a.grade-b.grade;
+        return b.unit-a.unit;
+      }).slice(0,2);
+    }
+    const pKor=pickTop2(bKor);
+    const pFor=pickTop2(bFor);
+    const pMath=pickTop2(bMath);
+    const pSocSci=pickTop2(bSocSci);
+
+    // 진로선택도 상위 2과목: 등급점수가 높은 순 (A=9.5 > B=6.5 > C=3)
+    const pJinro=[...bJinro].sort((a,b)=>{
+      const sa=getScore(a.grade,true), sb=getScore(b.grade,true);
+      if(sa!==sb) return sb-sa;
+      return b.unit-a.unit;
+    }).slice(0,2);
+
+    // 부족분은 9등급(=2점)으로 보충
+    function padTo2(arr, isJinro){
+      const pad=[];
+      while(arr.length+pad.length<2){
+        pad.push({grade:9, unit:1, name:'(미입력)', isABC:false, filled:true});
+      }
+      return [...arr, ...pad];
+    }
+    const fKor=padTo2(pKor), fFor=padTo2(pFor), fMath=padTo2(pMath), fSocSci=padTo2(pSocSci), fJinro=padTo2(pJinro,true);
+
+    // 총 10과목에서 부족하게 들어간 개수
+    const filledCount=[fKor,fFor,fMath,fSocSci,fJinro]
+      .reduce((s,arr)=>s+arr.filter(x=>x.filled).length,0);
+
+    // 평균석차등급점수 X 계산
+    let avgX;
+    if(u.scoring==='unit'){
+      // 항공운항학과: 이수단위 적용
+      // X = Σ(등급점수 × 단위가중값) / 10
+      const all=[...fKor,...fFor,...fMath,...fSocSci,...fJinro];
+      const sumUW=all.reduce((s,x)=>{
+        const score=getScore(x.grade, fJinro.includes(x));
+        return s + score * hanseoUnitWeight(x.unit);
+      },0);
+      avgX = sumUW / 10;
+    } else {
+      // 일반: X = Σ(등급점수) / 10
+      const all=[...fKor,...fFor,...fMath,...fSocSci,...fJinro];
+      const sumS=all.reduce((s,x)=>s + getScore(x.grade, fJinro.includes(x)), 0);
+      avgX = sumS / 10;
+    }
+    // 소수 넷째자리 절사
+    avgX = Math.floor(avgX*1000)/1000;
+
+    let pct=0, displayScore='', extraHtml='';
+
+    if(u.scoring==='basic'){
+      // 면접·실기 없는 전형: 교과 X × 45 + 출결 50 = 500점
+      const gyogwa=avgX*45;
+      const bigyo=50;
+      const total=gyogwa+bigyo;
+      pct=(total/500)*100;
+      displayScore=`${total.toFixed(1)}/500점`;
+      extraHtml=`
+        <div class="row"><span>교과 점수</span><b>${gyogwa.toFixed(2)}점</b> <span style="color:var(--t3)">(= ${avgX.toFixed(3)} × 45)</span></div>
+        <div class="row"><span>비교과(출결)</span><b>${bigyo}점</b> <span style="color:var(--t3)">(만점 가정, 사고결석 0일)</span></div>
+        <div class="row total-row"><span>총점</span><b>${total.toFixed(2)} / 500점</b></div>`;
+    } else if(u.scoring==='unit'){
+      // 항공운항학과: 이수단위 적용 X를 [표2] 구간표에 대입(면접 있음과 동일 산출)
+      const gyogwa=lookupInterval(avgX);
+      const bigyo=60;
+      const hakbu=gyogwa+bigyo;
+      pct=(hakbu/600)*100;
+      displayScore=`학생부 ${hakbu.toFixed(1)}/600점`;
+      extraHtml=`
+        <div class="row"><span>교과 점수 (구간표)</span><b>${gyogwa.toFixed(2)}점</b> / 540점</div>
+        <div class="row"><span>비교과(출결)</span><b>${bigyo}점</b> / 60점</div>
+        <div class="row total-row"><span>학생부 소계</span><b>${hakbu.toFixed(2)} / 600점</b></div>
+        <div class="row" style="color:var(--or)">※ 이수단위 적용 (5이상=1.0, 4=0.98, 3=0.97, 2이하=0.96)</div>
+        <div class="row" style="color:var(--or)">※ 수능 반영 별도 (면접 없음)</div>`;
+    } else if(u.scoring==='interview'){
+      const gyogwa=lookupInterval(avgX);
+      const bigyo=60;
+      const hakbu=gyogwa+bigyo;
+      pct=(hakbu/600)*100;
+      displayScore=`학생부 ${hakbu.toFixed(1)}/600점`;
+      extraHtml=`
+        <div class="row"><span>교과 점수 (구간표)</span><b>${gyogwa.toFixed(2)}점</b> / 540점</div>
+        <div class="row"><span>비교과(출결)</span><b>${bigyo}점</b> / 60점</div>
+        <div class="row total-row"><span>학생부 소계</span><b>${hakbu.toFixed(2)} / 600점</b></div>
+        <div class="row" style="color:var(--or)">※ 면접 400점 별도 (총 1000점 만점)</div>`;
+    }
+
+    const grade=percentToGrade(pct);
+    const displayGrade=11-avgX;
+
+    badge.innerHTML=`<span class="grade-label">${displayScore}</span><span class="grade-num">${displayGrade.toFixed(1)}등급</span>`;
+    badge.querySelector('.grade-num').style.color=
+      displayGrade<=2?'var(--gn)':displayGrade<=4?'var(--ac)':displayGrade<=6?'var(--or)':'var(--rd)';
+
+    // 상세 표시
+    function bucketRow(label, bucket, isJinro){
+      const parts=bucket.map(x=>{
+        const score=getScore(x.grade, isJinro);
+        if(x.filled) return `<span style="color:var(--rd)">9등급(${score}점) [보충]</span>`;
+        const gLabel=isJinro ? (x.grade===1?'A':x.grade===5?'B':x.grade===8?'C':`${x.grade}등급`) : `${x.grade}등급`;
+        const nameTag = x.name ? ` <span style="color:var(--t3)">${x.name}</span>` : '';
+        return `${gLabel}(${score}점)${nameTag}`;
+      }).join(', ');
+      const totalScore=bucket.reduce((s,x)=>s+getScore(x.grade,isJinro),0);
+      return `<div class="row"><span>${label}</span><span style="font-size:.7rem">${parts}</span></div>
+              <div class="row" style="padding-left:1rem"><span style="color:var(--t3)">└ 소계</span><b>${totalScore.toFixed(1)}점</b></div>`;
+    }
+
+    let subjHtml='';
+    subjHtml+=bucketRow('국어교과 (2과목)', fKor, false);
+    subjHtml+=bucketRow('외국어교과 (2과목, 제2외국어 포함)', fFor, false);
+    subjHtml+=bucketRow('수학교과 (2과목)', fMath, false);
+    subjHtml+=bucketRow('사회·과학교과 (2과목)', fSocSci, false);
+    subjHtml+=bucketRow('진로선택 (2과목, A=9.5·B=6.5·C=3)', fJinro, true);
+
+    const warnHtml=filledCount>0
+      ? `<div class="row" style="color:var(--or)">※ 반영과목 10개 미만 → ${filledCount}개 과목을 9등급(2점)으로 보충</div>`
+      : '';
+
+    detailEl.innerHTML=`
+      ${subjHtml}
+      ${warnHtml}
+      <div class="row" style="margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bd)">
+        <span>평균석차등급 점수 [X]</span><b>${avgX.toFixed(3)}</b> <span style="color:var(--t3)">(= 등급점수합 / 10)</span>
+      </div>
+      ${extraHtml}`;
+  }
+
+  toast('산출 완료!');
+}
+
+function clearGrades(){
+  MY_GRADES.forEach(r=>r.grade='');
+  renderGradeAccordion();
+  for(const u of UNIVS){
+    const badge=document.getElementById('badge_'+u.id);
+    badge.innerHTML='<span class="grade-label">등급</span><span class="grade-num">-</span>';
+    const detailEl=document.getElementById('detail_'+u.id);
+    detailEl.innerHTML='<div style="color:var(--t3);text-align:center;padding:.3rem 0">등급을 입력하고 산출하면 여기에 상세 결과가 표시됩니다.</div>';
+  }
+  toast('초기화 완료');
+}
+
+// ════════════════════════════════════
+// 전역 노출 + addEventListener 백업 바인딩
+// (onclick 인라인이 어떤 이유로 동작 안 할 때 대비)
+// ════════════════════════════════════
+window.deleteSelected=deleteSelected;
+window.deleteSelectedGrades=deleteSelectedGrades;
+window.calculateAll=calculateAll;
+window.clearGrades=clearGrades;
+window.toggleAccordion=toggleAccordion;
+window.toggleSchool=toggleSchool;
+window.toggleSem=toggleSem;
+window.addRow=addRow;
+window.toggleSummaryDash=toggleSummaryDash;
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const btnDU=document.getElementById('btnDelUnivs');
+  if(btnDU) btnDU.addEventListener('click',e=>{e.preventDefault();deleteSelected();});
+  const btnDG=document.getElementById('btnDelGrades');
+  if(btnDG) btnDG.addEventListener('click',e=>{e.preventDefault();deleteSelectedGrades();});
+});
+// DOMContentLoaded가 이미 지난 경우도 대비 (스크립트가 body 끝에 있으므로 이미 지나갔을 수 있음)
+(function bindNow(){
+  const btnDU=document.getElementById('btnDelUnivs');
+  if(btnDU && !btnDU._bound){
+    btnDU._bound=true;
+    btnDU.addEventListener('click',e=>{e.preventDefault();deleteSelected();});
+  }
+  const btnDG=document.getElementById('btnDelGrades');
+  if(btnDG && !btnDG._bound){
+    btnDG._bound=true;
+    btnDG.addEventListener('click',e=>{e.preventDefault();deleteSelectedGrades();});
+  }
+})();
+</script>
+</body>
+</html>
